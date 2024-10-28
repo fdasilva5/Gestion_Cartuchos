@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Gestion_Cartuchos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e78424ec6d267ad0a00f7955ea85fe7eab95d42c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+167294687c75039ad151ca5389f1277168f7053a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Gestion_Cartuchos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Gestion_Cartuchos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
