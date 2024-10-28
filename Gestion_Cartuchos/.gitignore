@@ -1,0 +1,30 @@
+# Ignora el archivo .env
+.env
+
+# Ignora las carpetas de compilación de .NET
+bin/
+obj/
+
+# Ignora archivos de configuración específicos del entorno
+*.user
+*.swp
+
+# Ignora archivos y carpetas específicos de IDEs como Visual Studio
+.vscode/
+.idea/
+.vs/
+# Ignora el archivo .env
+.env
+
+# Ignora las carpetas de compilación de .NET
+bin/
+obj/
+
+# Ignora archivos de configuración específicos del entorno
+*.user
+*.swp
+
+# Ignora archivos y carpetas específicos de IDEs como Visual Studio
+.vscode/
+.idea/
+.vs/
