@@ -11,6 +11,6 @@ namespace Models
         public int cartucho_id { get; set; }
         public required Cartucho cartucho { get; set; }
         public DateOnly fecha_asignacion { get; set; }
-        public DateOnly fecha_desasignacion { get; set; }
+        public DateOnly? fecha_desasignacion { get; set; } 
     }
 }

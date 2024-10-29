@@ -29,6 +29,9 @@ builder.Services.AddSwaggerGen();
 
 //Services
 services.AddScoped<CartuchoService>();
+services.AddScoped<ImpresoraService>();
+services.AddScoped<OficinaService>();
+services.AddScoped<Asignar_ImpresoraService>();
 
 
 //BDD

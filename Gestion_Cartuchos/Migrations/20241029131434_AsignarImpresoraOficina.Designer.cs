@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models;
 
@@ -11,9 +12,11 @@ using Models;
 namespace Gestion_Cartuchos.Migrations
 {
     [DbContext(typeof(Gestion_Cartuchos_Context))]
-    partial class Gestion_Cartuchos_ContextModelSnapshot : ModelSnapshot
+    [Migration("20241029131434_AsignarImpresoraOficina")]
+    partial class AsignarImpresoraOficina
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
