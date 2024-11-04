@@ -9,7 +9,6 @@ namespace Models
         
         public required string numero_serie { get; set; }
         public required DateOnly fecha_alta { get; set; }
-        public required int stock { get; set; } = 1;
         public int cantidad_recargas { get; set; }
         public string? observaciones { get; set; }
 
