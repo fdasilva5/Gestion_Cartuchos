@@ -1,7 +1,5 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Models;
 using Models.DTOs;
 using Services;
