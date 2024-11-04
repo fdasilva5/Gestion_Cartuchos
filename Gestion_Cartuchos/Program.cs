@@ -32,6 +32,7 @@ services.AddScoped<CartuchoService>();
 services.AddScoped<ImpresoraService>();
 services.AddScoped<OficinaService>();
 services.AddScoped<Asignar_ImpresoraService>();
+services.AddScoped<RecargaService>();
 
 
 //BDD
