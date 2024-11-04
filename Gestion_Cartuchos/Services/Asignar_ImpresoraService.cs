@@ -21,40 +21,87 @@ namespace Services
             var asignar_impresoras = await _context.Asignar_Impresoras
             .Include(x => x.impresora)
             .Include(x => x.cartucho)
+            .ThenInclude(x => x.modelo)
             .ToListAsync();
             return _mapper.Map<IEnumerable<Asignar_Impresora_DTO>>(asignar_impresoras);
         }
 
         public async Task<Asignar_Impresora_DTO> GetById(int id)
         {
-            var asignar_impresora = await _context.Asignar_Impresoras.FirstOrDefaultAsync(x => x.Id == id);
+            var asignar_impresora = await _context.Asignar_Impresoras
+            .Include(x => x.impresora)
+            .Include(x => x.cartucho)
+            .ThenInclude(x => x.modelo)
+            .FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<Asignar_Impresora_DTO>(asignar_impresora);
         }
 
         public async Task<Asignar_Impresora> Create(Asignar_Impresora_DTO asignar_impresoraDTO)
         {
+            if (asignar_impresoraDTO == null)
+            {
+                throw new ArgumentNullException(nameof(asignar_impresoraDTO));
+            }
+
             var asignar_impresora = _mapper.Map<Asignar_Impresora>(asignar_impresoraDTO);
 
-            
             var imporesora_con_cartucho_asignado = await _context.Asignar_Impresoras
                 .FirstOrDefaultAsync(x => x.impresora.Id == asignar_impresoraDTO.impresora_id);
-            if (imporesora_con_cartucho_asignado != null)
+
+            if (imporesora_con_cartucho_asignado != null && imporesora_con_cartucho_asignado.fecha_desasignacion == null)
             {
                 throw new InvalidOperationException("Esta impresora ya tiene un cartucho asignado");
             }
+
             var cartucho_en_uso = await _context.Asignar_Impresoras
-                .FirstOrDefaultAsync(x => x.cartucho.Id == asignar_impresoraDTO.cartucho_id);
+                .FirstOrDefaultAsync(x => x.cartucho.Id == asignar_impresoraDTO.cartucho_id && x.fecha_desasignacion == null);
+
             if (cartucho_en_uso != null)
             {
-                throw new InvalidOperationException("Este cartucho ya esta asignado a una impresora");
+                throw new InvalidOperationException("Este cartucho ya está asignado a una impresora");
             }
-            
+
             asignar_impresora.impresora = await _context.Impresoras.FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.impresora_id);
+            if (asignar_impresora.impresora == null)
+            {
+                throw new InvalidOperationException("La impresora especificada no existe");
+            }
+
             asignar_impresora.oficina = await _context.Oficinas.FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.oficina_id);
-            asignar_impresora.cartucho = await _context.Cartuchos.FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.cartucho_id);
+            if (asignar_impresora.oficina == null)
+            {
+                throw new InvalidOperationException("La oficina especificada no existe");
+            }
+
+            asignar_impresora.cartucho = await _context.Cartuchos
+                .Include(c => c.modelo)
+                .FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.cartucho_id);
+            if (asignar_impresora.cartucho == null)
+            {
+                throw new InvalidOperationException("El cartucho especificado no existe");
+            }
+
+            if (asignar_impresora.cartucho.estado_id != 1)
+            {
+                throw new InvalidOperationException("El cartucho especificado no está disponible para asignación");
+            }
+
             asignar_impresora.fecha_asignacion = DateOnly.FromDateTime(DateTime.Now);
-            asignar_impresora.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 2); 
+            asignar_impresora.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 2);
+            if (asignar_impresora.cartucho.estado == null)
+            {
+                throw new InvalidOperationException("El estado especificado no existe");
+            }
+
             asignar_impresora.cartucho.estado_id = 2;
+
+            if (asignar_impresora.cartucho.modelo == null)
+            {
+                throw new InvalidOperationException("El modelo del cartucho especificado no existe");
+            }
+
+            asignar_impresora.cartucho.modelo.stock -= 1;
+
             _context.Asignar_Impresoras.Add(asignar_impresora);
             await _context.SaveChangesAsync();
             return asignar_impresora;
@@ -75,19 +122,29 @@ namespace Services
 
         public async Task DesasignarCartucho(int idCartucho)
         {
-            var asignar_impresora = await _context.Asignar_Impresoras
+            var asignaciones = await _context.Asignar_Impresoras
                 .Include(x => x.cartucho)
-                .FirstOrDefaultAsync(x => x.cartucho_id == idCartucho);
+                .Where(x => x.cartucho_id == idCartucho && x.fecha_desasignacion == null)
+                .ToListAsync();
 
-            if (asignar_impresora == null)
+            if (!asignaciones.Any())
             {
-                throw new InvalidOperationException("No se encontró la asignación del cartucho.");
+                throw new InvalidOperationException("No se encontró ninguna asignación activa del cartucho.");
             }
 
-            asignar_impresora.cartucho.estado_id = 3;
-            asignar_impresora.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 3);
-            asignar_impresora.fecha_desasignacion = DateOnly.FromDateTime(DateTime.Now);
-            
+            var estadoDesasignado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 3);
+            if (estadoDesasignado == null)
+            {
+                throw new InvalidOperationException("El estado especificado no existe.");
+            }
+
+            foreach (var asignar_impresora in asignaciones)
+            {
+                asignar_impresora.cartucho.estado_id = 3;
+                asignar_impresora.cartucho.estado = estadoDesasignado;
+                asignar_impresora.fecha_desasignacion = DateOnly.FromDateTime(DateTime.Now);
+            }
+
             await _context.SaveChangesAsync();
         }
         

@@ -27,7 +27,10 @@ namespace Services
 
         public async Task<CartuchoDTO> GetById(int id)
         {
-            var cartucho = await _context.Cartuchos.FirstOrDefaultAsync(x => x.Id == id);
+            var cartucho = await _context.Cartuchos
+            .Include(x => x.modelo)
+            .Include(x => x.estado)
+            .FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<CartuchoDTO>(cartucho);
         }
 
@@ -36,8 +39,10 @@ namespace Services
             var cartucho = _mapper.Map<Cartucho>(cartuchoDTO);
             
             cartucho.modelo = await _context.Modelos.FirstOrDefaultAsync(x => x.Id == cartuchoDTO.modelo_id);
-            cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == cartuchoDTO.estado_id);
+            cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 1);
+            cartucho.estado_id = 1; // Estado: Disponible
             cartucho.fecha_alta = DateOnly.FromDateTime(DateTime.Now);
+            cartucho.modelo.stock += 1;
             _context.Cartuchos.Add(cartucho);
             await _context.SaveChangesAsync();
             return cartucho;
