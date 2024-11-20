@@ -56,6 +56,8 @@ namespace Services
             }
 
             recarga.cartucho.modelo.stock += 1;
+            recarga.cartucho.estado_id = 1; // Estado: Disponible
+            recarga.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 1);
             
             _context.Recargas.Add(recarga);
             await _context.SaveChangesAsync();

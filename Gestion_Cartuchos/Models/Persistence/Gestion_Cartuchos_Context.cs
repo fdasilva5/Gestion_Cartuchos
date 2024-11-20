@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Models
 {
@@ -8,9 +7,10 @@ namespace Models
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            DotNetEnv.Env.Load();
+            Env.Load(); // Cargar el archivo .env
 
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+                ?? throw new InvalidOperationException("La variable de entorno 'CONNECTION_STRING' no está configurada.");
 
             optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 34)));
         }

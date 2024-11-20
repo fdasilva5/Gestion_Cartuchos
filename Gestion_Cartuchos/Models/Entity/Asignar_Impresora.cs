@@ -5,7 +5,6 @@ namespace Models
         public int Id { get; set; }
 
         public int oficina_id { get; set; }
-        public required Oficina oficina { get; set; }
         public int impresora_id { get; set; }
         public required Impresora impresora { get; set; }
         public int cartucho_id { get; set; }

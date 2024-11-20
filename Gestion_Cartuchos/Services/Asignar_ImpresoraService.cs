@@ -67,11 +67,7 @@ namespace Services
                 throw new InvalidOperationException("La impresora especificada no existe");
             }
 
-            asignar_impresora.oficina = await _context.Oficinas.FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.oficina_id);
-            if (asignar_impresora.oficina == null)
-            {
-                throw new InvalidOperationException("La oficina especificada no existe");
-            }
+            
 
             asignar_impresora.cartucho = await _context.Cartuchos
                 .Include(c => c.modelo)

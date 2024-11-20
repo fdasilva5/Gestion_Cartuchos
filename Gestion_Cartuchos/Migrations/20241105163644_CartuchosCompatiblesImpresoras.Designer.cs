@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models;
 
@@ -11,9 +12,11 @@ using Models;
 namespace Gestion_Cartuchos.Migrations
 {
     [DbContext(typeof(Gestion_Cartuchos_Context))]
-    partial class Gestion_Cartuchos_ContextModelSnapshot : ModelSnapshot
+    [Migration("20241105163644_CartuchosCompatiblesImpresoras")]
+    partial class CartuchosCompatiblesImpresoras
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,6 +51,9 @@ namespace Gestion_Cartuchos.Migrations
                     b.Property<int>("impresora_id")
                         .HasColumnType("int");
 
+                    b.Property<int>("oficinaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("oficina_id")
                         .HasColumnType("int");
 
@@ -56,6 +62,8 @@ namespace Gestion_Cartuchos.Migrations
                     b.HasIndex("cartuchoId");
 
                     b.HasIndex("impresoraId");
+
+                    b.HasIndex("oficinaId");
 
                     b.ToTable("Asignar_Impresoras");
                 });
@@ -135,15 +143,7 @@ namespace Gestion_Cartuchos.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("oficinaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("oficina_id")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("oficinaId");
 
                     b.ToTable("Impresoras");
                 });
@@ -236,9 +236,17 @@ namespace Gestion_Cartuchos.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Models.Oficina", "oficina")
+                        .WithMany()
+                        .HasForeignKey("oficinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("cartucho");
 
                     b.Navigation("impresora");
+
+                    b.Navigation("oficina");
                 });
 
             modelBuilder.Entity("Models.Cartucho", b =>
@@ -258,17 +266,6 @@ namespace Gestion_Cartuchos.Migrations
                     b.Navigation("estado");
 
                     b.Navigation("modelo");
-                });
-
-            modelBuilder.Entity("Models.Impresora", b =>
-                {
-                    b.HasOne("Models.Oficina", "oficina")
-                        .WithMany()
-                        .HasForeignKey("oficinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("oficina");
                 });
 
             modelBuilder.Entity("Models.Modelo", b =>
