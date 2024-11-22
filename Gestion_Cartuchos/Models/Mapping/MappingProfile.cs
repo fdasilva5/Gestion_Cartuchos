@@ -23,6 +23,8 @@ namespace Models.Mapping
             CreateMap<Asignar_Impresora_DTO, Asignar_Impresora>();
             CreateMap<Recargas, RecargasDTO>();
             CreateMap<RecargasDTO, Recargas>();
+            CreateMap<Estado, EstadoDTO>();
+            CreateMap<EstadoDTO, Estado>();
         }
     }
 }
