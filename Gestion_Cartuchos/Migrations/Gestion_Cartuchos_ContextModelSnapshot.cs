@@ -48,9 +48,6 @@ namespace Gestion_Cartuchos.Migrations
                     b.Property<int>("impresora_id")
                         .HasColumnType("int");
 
-                    b.Property<int>("oficina_id")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("cartuchoId");

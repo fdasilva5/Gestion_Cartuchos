@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Gestion_Cartuchos.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class restore : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,40 +31,6 @@ namespace Gestion_Cartuchos.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Impresoras",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    modelo = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    marca = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Impresoras", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Modelos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    modelo_cartuchos = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    marca = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Modelos", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Oficinas",
                 columns: table => new
                 {
@@ -80,6 +46,55 @@ namespace Gestion_Cartuchos.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Impresoras",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    modelo = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    marca = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    oficinaId = table.Column<int>(type: "int", nullable: false),
+                    oficina_id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Impresoras", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Impresoras_Oficinas_oficinaId",
+                        column: x => x.oficinaId,
+                        principalTable: "Oficinas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Modelos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    modelo_cartuchos = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    marca = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    stock = table.Column<int>(type: "int", nullable: false),
+                    ImpresoraId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Modelos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Modelos_Impresoras_ImpresoraId",
+                        column: x => x.ImpresoraId,
+                        principalTable: "Impresoras",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Cartuchos",
                 columns: table => new
                 {
@@ -88,7 +103,6 @@ namespace Gestion_Cartuchos.Migrations
                     numero_serie = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     fecha_alta = table.Column<DateOnly>(type: "date", nullable: false),
-                    stock = table.Column<int>(type: "int", nullable: false),
                     cantidad_recargas = table.Column<int>(type: "int", nullable: false),
                     observaciones = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -126,7 +140,7 @@ namespace Gestion_Cartuchos.Migrations
                     cartucho_id = table.Column<int>(type: "int", nullable: false),
                     cartuchoId = table.Column<int>(type: "int", nullable: false),
                     fecha_asignacion = table.Column<DateOnly>(type: "date", nullable: false),
-                    fecha_desasignacion = table.Column<DateOnly>(type: "date", nullable: false)
+                    fecha_desasignacion = table.Column<DateOnly>(type: "date", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -191,6 +205,16 @@ namespace Gestion_Cartuchos.Migrations
                 column: "modeloId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Impresoras_oficinaId",
+                table: "Impresoras",
+                column: "oficinaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Modelos_ImpresoraId",
+                table: "Modelos",
+                column: "ImpresoraId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Recargas_cartuchoId",
                 table: "Recargas",
                 column: "cartuchoId");
@@ -203,13 +227,7 @@ namespace Gestion_Cartuchos.Migrations
                 name: "Asignar_Impresoras");
 
             migrationBuilder.DropTable(
-                name: "Oficinas");
-
-            migrationBuilder.DropTable(
                 name: "Recargas");
-
-            migrationBuilder.DropTable(
-                name: "Impresoras");
 
             migrationBuilder.DropTable(
                 name: "Cartuchos");
@@ -219,6 +237,12 @@ namespace Gestion_Cartuchos.Migrations
 
             migrationBuilder.DropTable(
                 name: "Modelos");
+
+            migrationBuilder.DropTable(
+                name: "Impresoras");
+
+            migrationBuilder.DropTable(
+                name: "Oficinas");
         }
     }
 }
