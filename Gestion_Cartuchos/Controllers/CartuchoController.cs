@@ -9,7 +9,7 @@ namespace Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class CartuchoContoller(CartuchoService cartuchoService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class CartuchoController(CartuchoService cartuchoService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
         private readonly CartuchoService _cartuchoService = cartuchoService;
         private readonly IMapper _mapper = mapper;
@@ -22,6 +22,18 @@ namespace Controllers
         return await _cartuchoService.GetAll();
     }
 
+    [HttpGet("disponibles")]
+    public async Task<IEnumerable<CartuchoDTO>> GetByEstadoDisponible()
+    {
+        return await _cartuchoService.GetByEstadoDisponible();
+    }
+
+    [HttpGet("impresora/{impresoraId}")]
+    public async Task<IEnumerable<CartuchoDTO>> GetByImpresoraId(int impresoraId)
+    {
+        return await _cartuchoService.GetByImpresoraId(impresoraId);
+    }
+    
     [HttpGet("{id}")]
     public async Task<CartuchoDTO> GetById(int id)
     {
@@ -38,6 +50,12 @@ namespace Controllers
     public async Task Update(int id, CartuchoDTO cartuchoDTO)
     {
         await _cartuchoService.Update(id, cartuchoDTO);
+    }
+
+    [HttpPut("estadoEnRecarga/{id}")]
+    public async Task UpdateEstado(int id)
+    {
+        await _cartuchoService.ChangeEstadoToEnRecarga(id);
     }
 
     [HttpDelete("{id}")]

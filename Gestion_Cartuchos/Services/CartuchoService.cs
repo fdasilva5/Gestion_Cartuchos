@@ -25,6 +25,39 @@ namespace Services
             return _mapper.Map<IEnumerable<CartuchoDTO>>(cartuchos);
         }
 
+        public async Task<IEnumerable<CartuchoDTO>> GetByEstadoDisponible()
+        {
+            var cartuchos = await _context.Cartuchos
+                .Include(x => x.modelo)
+                .Include(x => x.estado)
+                .Where(x => x.estado_id == 1)
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<CartuchoDTO>>(cartuchos);
+        }
+
+        public async Task<IEnumerable<CartuchoDTO>> GetByImpresoraId(int impresoraId)
+        {
+            var impresora = await _context.Impresoras
+            .Include(i => i.modelos_cartucho_compatibles)
+            .FirstOrDefaultAsync(i => i.Id == impresoraId);
+
+            if (impresora == null)
+            {
+            throw new Exception("Impresora no encontrada");
+            }
+
+            var modelosCompatiblesIds = impresora.modelos_cartucho_compatibles
+            .Select(m => m.Id)
+            .ToList();
+
+            var cartuchosCompatibles = await _context.Cartuchos
+            .Where(c => modelosCompatiblesIds.Contains(c.modelo_id) && c.estado_id == 1)
+            .Include(c => c.modelo)
+            .ToListAsync();
+
+            return _mapper.Map<IEnumerable<CartuchoDTO>>(cartuchosCompatibles);
+        }
+
         public async Task<CartuchoDTO> GetById(int id)
         {
             var cartucho = await _context.Cartuchos
@@ -54,6 +87,19 @@ namespace Services
             cartucho.Id = id;
             _context.Entry(cartucho).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ChangeEstadoToEnRecarga(int id)
+        {
+            var cartucho = await _context.Cartuchos.FirstOrDefaultAsync(x => x.Id == id);
+            var estadoCartucho = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 5);
+            
+            if (cartucho != null)
+            {
+                cartucho.estado_id = 5;
+                cartucho.estado = estadoCartucho;
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task Delete(int id)
