@@ -6,12 +6,14 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
-import AlertPage from "../pages/impresoras/AlertPage";
-import ButtonPage from "../pages/impresoras/ButtonPage";
+
 import AsignarCartuchosPage from "../pages/cartuchos/AsignarCartuchosPage";
 import ListaCartuchosPage from "../pages/cartuchos/ListaCartuchosPage";
 import RecargasPageLayout from "../pages/recargas/RecargasPageLayout";
 import ImpresoraPageLayout from "../pages/impresoras/ImpresoraPageLayout";
+import ListaImpresorasPage from "../pages/impresoras/ListarImpresoraPage";
+import ListarModelosCartuchosPage from "../pages/cartuchos/ListarModelosCartuchosPage";
+import ListarOficinasPage from "../pages/oficinas/ListarOficinasPage";
 
 
 
@@ -46,6 +48,14 @@ const appRoutes: RouteType[] = [
         sidebarProps: {
           displayText: "Lista de Cartuchos"
         }
+      },
+      {
+        path: "/cartuchos/modelos",
+        element: <ListarModelosCartuchosPage />,
+        state: "cartuchos.modelos",
+        sidebarProps: {
+          displayText: "Modelos de Cartuchos"
+        }
       }
     ]
   },
@@ -59,11 +69,11 @@ const appRoutes: RouteType[] = [
     },
     child: [
       {
-        path: "/impresoras/button",
-        element: <ButtonPage />,
-        state: "impresoras.button",
+        path: "/impresoras/lista",
+        element: <ListaImpresorasPage />,
+        state: "impresoras.lista",
         sidebarProps: {
-          displayText: "Button"
+          displayText: "Lista de Impresoras"
         }
       }
     ]
@@ -78,11 +88,11 @@ const appRoutes: RouteType[] = [
     }
   },
   {
-    path: "/changelog",
-    element: <ChangelogPage />,
-    state: "changelog",
+    path: "/oficinas",
+    element: <ListarOficinasPage />,
+    state: "oficinas",
     sidebarProps: {
-      displayText: "Changelog",
+      displayText: "Oficinas",
       icon: <FormatListBulletedOutlinedIcon />
     }
   }

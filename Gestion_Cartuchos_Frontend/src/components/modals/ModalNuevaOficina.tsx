@@ -1,0 +1,123 @@
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Modal,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { show_alerta } from '../../helpers/funcionSweetAlert';
+
+const ModalNuevaOficina = ({
+  open,
+  onClose,
+  onSave,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: () => void;
+}) => {
+  const [nombre, setNombre] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [nombreError, setNombreError] = useState("");
+
+  const API_URL = "http://localhost:5204";
+
+  const resetForm = () => {
+    setNombre("");
+    setNombreError("");
+  };
+
+  useEffect(() => {
+    if (!open) {
+      resetForm();
+    }
+  }, [open]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validaciones
+    let valid = true;
+    if (!nombre) {
+      setNombreError("Este campo es requerido.");
+      valid = false;
+    } else {
+      setNombreError("");
+    }
+
+    if (!valid) return;
+
+    const oficinaDTO = {
+      id: 0,
+      nombre: nombre,
+    };
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/Oficina`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(oficinaDTO),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        show_alerta("Oficina guardada con éxito", "success");
+        onSave();
+        onClose();
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      show_alerta("Ocurrió un error inesperado.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal open={open} onClose={onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 400,
+          bgcolor: "background.paper",
+          boxShadow: 24,
+          p: 4,
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">Añadir Nueva Oficina</Typography>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="Nombre"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            sx={{ mb: 2 }}
+            error={Boolean(nombreError)}
+            helperText={nombreError}
+          />
+          <Button type="submit" variant="contained" color="primary" disabled={loading}>
+            {loading ? 'Guardando...' : 'Guardar'}
+          </Button>
+        </form>
+      </Box>
+    </Modal>
+  );
+};
+
+export default ModalNuevaOficina;
