@@ -20,10 +20,31 @@ namespace Services
         {
             var asignar_impresoras = await _context.Asignar_Impresoras
             .Include(x => x.impresora)
+            .ThenInclude(x => x.oficina)    
             .Include(x => x.cartucho)
             .ThenInclude(x => x.modelo)
+            .Where(x => x.fecha_desasignacion == null)
             .ToListAsync();
             return _mapper.Map<IEnumerable<Asignar_Impresora_DTO>>(asignar_impresoras);
+        }
+
+        public async Task<IEnumerable<Impresora>> GetImpresorasSinAsignacion()
+        {
+            var impresorasSinAsignacion = await _context.Impresoras
+                .Where(i => !_context.Asignar_Impresoras.Any(ai => ai.impresora.Id == i.Id && ai.fecha_desasignacion == null))
+                .ToListAsync();
+            
+            return impresorasSinAsignacion;
+        }
+
+        public async Task<IEnumerable<Asignar_Impresora_DTO>> GetCartuchos()   
+        {
+            var cartuchosAsignados = await _context.Asignar_Impresoras
+                .Include(x => x.cartucho)
+                .ThenInclude(x => x.modelo)
+                .ToListAsync();
+            
+            return _mapper.Map<IEnumerable<Asignar_Impresora_DTO>>(cartuchosAsignados);
         }
 
         public async Task<Asignar_Impresora_DTO> GetById(int id)
