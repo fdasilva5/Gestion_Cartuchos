@@ -37,35 +37,44 @@ namespace Services
 
 
         public async Task<Recargas> Create(RecargasDTO recargaDTO)
-        {
-            var recarga = _mapper.Map<Recargas>(recargaDTO);
+{
+    var recarga = _mapper.Map<Recargas>(recargaDTO);
 
-            recarga.cartucho = await _context.Cartuchos.FirstOrDefaultAsync(x => x.Id == recargaDTO.cartucho_id);
-            recarga.fecha_recarga = DateOnly.FromDateTime(DateTime.Now);
-            
-            if (recarga.cartucho.cantidad_recargas == 4)
-            {
-                throw new InvalidOperationException("El cartucho ya alcanzo el maximo de recargas permitidas");
-            }
+    recarga.cartucho = await _context.Cartuchos
+        .Include(c => c.modelo) /
+        .FirstOrDefaultAsync(x => x.Id == recargaDTO.cartucho_id);
+    recarga.fecha_recarga = DateOnly.FromDateTime(DateTime.Now);
 
-            recarga.cartucho.cantidad_recargas += 1; //Cuando llega a 4 tiene que generar una alerta
-            
-            if (recarga.cartucho.cantidad_recargas == 4)
-            {
-                //Generar alerta
-            }
+    if (recarga.cartucho == null)
+    {
+        throw new InvalidOperationException("El cartucho no puede ser nulo");
+    }
 
-            recarga.cartucho.modelo.stock += 1;
-            recarga.cartucho.estado_id = 1; // Estado: Disponible
-            recarga.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 1);
-            
-            _context.Recargas.Add(recarga);
-            await _context.SaveChangesAsync();
-            return recarga;
-        }
+    recarga.cartucho.cantidad_recargas += 1;
 
+    if (recarga.cartucho.cantidad_recargas == 4)
+    {
+        throw new InvalidOperationException("El cartucho ya alcanzo el maximo de recargas permitidas");
+    }
 
+    if (recarga.cartucho.modelo == null)
+    {
+        throw new InvalidOperationException("El modelo del cartucho no puede ser nulo");
+    }
 
+    recarga.cartucho.modelo.stock += 1;
+    recarga.cartucho.estado_id = 1; // Estado: Disponible
 
+    if (_context == null)
+    {
+        throw new InvalidOperationException("El contexto no puede ser nulo");
+    }
+
+    recarga.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 1);
+
+    _context.Recargas.Add(recarga);
+    await _context.SaveChangesAsync();
+    return recarga;
+}
     }
 }
