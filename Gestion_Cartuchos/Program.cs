@@ -33,6 +33,7 @@ services.AddScoped<OficinaService>();
 services.AddScoped<Asignar_ImpresoraService>();
 services.AddScoped<RecargaService>();
 services.AddScoped<ModeloService>();
+services.AddScoped<EstadoService>();
 
 
 //BDD
