@@ -41,7 +41,7 @@ namespace Services
     var recarga = _mapper.Map<Recargas>(recargaDTO);
 
     recarga.cartucho = await _context.Cartuchos
-        .Include(c => c.modelo) /
+        .Include(c => c.modelo) 
         .FirstOrDefaultAsync(x => x.Id == recargaDTO.cartucho_id);
     recarga.fecha_recarga = DateOnly.FromDateTime(DateTime.Now);
 

@@ -22,5 +22,6 @@ namespace Models
         public DbSet<Modelo> Modelos { get; set; }
         public DbSet<Oficina> Oficinas { get; set; }
         public DbSet<Recargas> Recargas { get; set; }
+        public DbSet<ImpresoraModelo> ImpresoraModelos { get; internal set; }
     }
 }

@@ -12,8 +12,8 @@ using Models;
 namespace Gestion_Cartuchos.Migrations
 {
     [DbContext(typeof(Gestion_Cartuchos_Context))]
-    [Migration("20241122152928_restore")]
-    partial class restore
+    [Migration("20241125154938_nueva")]
+    partial class nueva
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,35 @@ namespace Gestion_Cartuchos.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("ImpresoraModelo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("impresoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("impresora_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("modeloId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("modelo_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("impresoraId");
+
+                    b.HasIndex("modeloId");
+
+                    b.ToTable("ImpresoraModelos");
+                });
 
             modelBuilder.Entity("Models.Asignar_Impresora", b =>
                 {
@@ -156,9 +185,6 @@ namespace Gestion_Cartuchos.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ImpresoraId")
-                        .HasColumnType("int");
-
                     b.Property<string>("marca")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -171,8 +197,6 @@ namespace Gestion_Cartuchos.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImpresoraId");
 
                     b.ToTable("Modelos");
                 });
@@ -220,6 +244,25 @@ namespace Gestion_Cartuchos.Migrations
                     b.HasIndex("cartuchoId");
 
                     b.ToTable("Recargas");
+                });
+
+            modelBuilder.Entity("ImpresoraModelo", b =>
+                {
+                    b.HasOne("Models.Impresora", "impresora")
+                        .WithMany()
+                        .HasForeignKey("impresoraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Modelo", "modelo")
+                        .WithMany()
+                        .HasForeignKey("modeloId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("impresora");
+
+                    b.Navigation("modelo");
                 });
 
             modelBuilder.Entity("Models.Asignar_Impresora", b =>
@@ -271,13 +314,6 @@ namespace Gestion_Cartuchos.Migrations
                     b.Navigation("oficina");
                 });
 
-            modelBuilder.Entity("Models.Modelo", b =>
-                {
-                    b.HasOne("Models.Impresora", null)
-                        .WithMany("modelos_cartucho_compatibles")
-                        .HasForeignKey("ImpresoraId");
-                });
-
             modelBuilder.Entity("Models.Recargas", b =>
                 {
                     b.HasOne("Models.Cartucho", "cartucho")
@@ -287,11 +323,6 @@ namespace Gestion_Cartuchos.Migrations
                         .IsRequired();
 
                     b.Navigation("cartucho");
-                });
-
-            modelBuilder.Entity("Models.Impresora", b =>
-                {
-                    b.Navigation("modelos_cartucho_compatibles");
                 });
 #pragma warning restore 612, 618
         }

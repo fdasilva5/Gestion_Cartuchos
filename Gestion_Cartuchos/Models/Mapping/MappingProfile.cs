@@ -10,21 +10,14 @@ namespace Models.Mapping
         {
             CreateMap<Cartucho, CartuchoDTO>();
             CreateMap<CartuchoDTO, Cartucho>();
-            CreateMap<Impresora, ImpresoraDTO>()
-            .ForMember(dest => dest.modelo_cartucho_compatible, opt => opt.MapFrom(src => src.modelos_cartucho_compatibles));
-        CreateMap<ImpresoraDTO, Impresora>()
-            .ForMember(dest => dest.modelos_cartucho_compatibles, opt => opt.MapFrom(src => src.modelo_cartucho_compatible));
-        CreateMap<Modelo, ModeloDTO>().ReverseMap();
+            CreateMap<Impresora, ImpresoraDTO>().ReverseMap(); // Ensure ReverseMap is used here
             CreateMap<Modelo, ModeloDTO>();
             CreateMap<ModeloDTO, Modelo>();
-            CreateMap<Oficina, OficinaDTO>();
-            CreateMap<OficinaDTO, Oficina>();
-            CreateMap<Asignar_Impresora, Asignar_Impresora_DTO>();
-            CreateMap<Asignar_Impresora_DTO, Asignar_Impresora>();
-            CreateMap<Recargas, RecargasDTO>();
-            CreateMap<RecargasDTO, Recargas>();
-            CreateMap<Estado, EstadoDTO>();
-            CreateMap<EstadoDTO, Estado>();
+            CreateMap<ImpresoraModelo, ImpresoraModeloDTO>().ReverseMap();
+            CreateMap<Oficina, OficinaDTO>().ReverseMap();
+            CreateMap<Asignar_Impresora, Asignar_Impresora_DTO>().ReverseMap();
+            CreateMap<Recargas, RecargasDTO>().ReverseMap();
+            CreateMap<Estado, EstadoDTO>().ReverseMap();
         }
     }
 }

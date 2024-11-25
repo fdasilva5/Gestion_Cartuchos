@@ -10,5 +10,6 @@ namespace Models
         public required string marca { get; set; }
     
         public required int stock { get; set; } = 1;
+       
     }
 }

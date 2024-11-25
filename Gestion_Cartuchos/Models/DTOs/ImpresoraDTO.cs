@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Models.DTOs
 {
     public class ImpresoraDTO
@@ -7,6 +9,9 @@ namespace Models.DTOs
         public required string Marca { get; set; }
         public required int oficina_id { get; set; }
         public required Oficina oficina { get; set; }
-        public ICollection<Modelo>? modelo_cartucho_compatible { get; set; }
+        public List<int> CompatibleModeloIds { get; set; } // Add this property
+        
+       
+        
     }
 }

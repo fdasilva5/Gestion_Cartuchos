@@ -11,7 +11,7 @@ namespace Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class ImpresoraContoller(ImpresoraService impresoraService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class ImpresoraController(ImpresoraService impresoraService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
         private readonly ImpresoraService _impresoraService = impresoraService;
         private readonly IMapper _mapper = mapper;
@@ -21,6 +21,12 @@ namespace Controllers
     public async Task<IEnumerable<ImpresoraDTO>> GetAll()
     {
         return await _impresoraService.GetAll();
+    }
+
+    [HttpGet("modelos")]
+    public async Task<IEnumerable<ModeloDTO>> GetCompatibleModelos(int impresoraId)
+    {
+        return await _impresoraService.GetCompatibleModelos(impresoraId);
     }
 
     [HttpGet("{id}")]

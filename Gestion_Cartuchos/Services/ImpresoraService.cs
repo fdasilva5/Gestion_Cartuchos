@@ -16,44 +16,88 @@ namespace Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<ModeloDTO>> GetCompatibleModelos(int impresoraId)
+        {
+            var impresoraModelos = await _context.ImpresoraModelos
+                .Include(im => im.modelo)
+                .Where(im => im.impresora_id == impresoraId)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ModeloDTO>>(impresoraModelos.Select(im => im.modelo));
+        }
+
         public async Task<IEnumerable<ImpresoraDTO>> GetAll()
         {
             var impresoras = await _context.Impresoras
-            .Include(x => x.modelos_cartucho_compatibles)
+            .Include(x => x.ImpresoraModelos)
             .Include(x => x.oficina)
             .ToListAsync();
             return _mapper.Map<IEnumerable<ImpresoraDTO>>(impresoras);
         }
 
+        
+
         public async Task<ImpresoraDTO> GetById(int id)
         {
             var impresora = await _context.Impresoras
-            .Include(x => x.modelos_cartucho_compatibles)
             .Include(x => x.oficina)
             .FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<ImpresoraDTO>(impresora);
         }
 
+
+
         public async Task<ImpresoraDTO> Create(ImpresoraDTO impresoraDTO)
         {
             var impresora = _mapper.Map<Impresora>(impresoraDTO);
-            var modelos_cartucho_compatibles = new List<Modelo>();
-            var oficina = await _context.Oficinas.FirstOrDefaultAsync(x => x.Id == impresoraDTO.oficina_id);
-            foreach (var modeloCartuchoDTO in impresoraDTO.modelo_cartucho_compatible)
+            var oficina = await _context.Oficinas.FindAsync(impresoraDTO.oficina_id);
+
+            if (oficina == null)
             {
-                var modelo_cartucho = await _context.Modelos.FirstOrDefaultAsync(x => x.Id == modeloCartuchoDTO.Id);
-                if (modelo_cartucho != null)
-                {
-                    modelos_cartucho_compatibles.Add(modelo_cartucho);
-                }
+                throw new Exception("Oficina no encontrada");
             }
-            impresora.modelos_cartucho_compatibles = modelos_cartucho_compatibles;
+
             impresora.oficina = oficina;
 
-            _context.Impresoras.Add(impresora);
+            
+            await _context.Impresoras.AddAsync(impresora);
             await _context.SaveChangesAsync();
+
+            foreach (var modeloId in impresoraDTO.CompatibleModeloIds)
+            {
+                await CreateImpresoraModelo(impresora.Id, modeloId);
+            }
+            
             return _mapper.Map<ImpresoraDTO>(impresora);
         }
+
+
+
+        public async Task<ImpresoraModelo> CreateImpresoraModelo(int impresoraId, int modeloId)
+        {
+            var impresora = await _context.Impresoras.FindAsync(impresoraId);
+            var modelo = await _context.Modelos.FindAsync(modeloId);
+
+            if (impresora == null || modelo == null)
+            {
+                throw new Exception("Impresora o Modelo no encontrado");
+            }
+
+            var impresoraModelo = new ImpresoraModelo
+            {
+                impresora_id = impresoraId,
+                modelo_id = modeloId,
+                impresora = impresora,
+                modelo = modelo
+            };
+
+            await _context.ImpresoraModelos.AddAsync(impresoraModelo);
+            await _context.SaveChangesAsync();
+
+            return impresoraModelo;
+        }
+
+
 
         public async Task Update(int id, ImpresoraDTO impresoraDTO)
         {

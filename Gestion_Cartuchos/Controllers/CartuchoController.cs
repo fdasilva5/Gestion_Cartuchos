@@ -28,11 +28,6 @@ namespace Controllers
         return await _cartuchoService.GetByEstadoDisponible();
     }
 
-    [HttpGet("impresora/{impresoraId}")]
-    public async Task<IEnumerable<CartuchoDTO>> GetByImpresoraId(int impresoraId)
-    {
-        return await _cartuchoService.GetByImpresoraId(impresoraId);
-    }
     
     [HttpGet("{id}")]
     public async Task<CartuchoDTO> GetById(int id)

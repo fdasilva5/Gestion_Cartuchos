@@ -11,6 +11,6 @@ namespace Models
         public required string marca { get; set; }  
         public required Oficina oficina { get; set; }
         public required int oficina_id { get; set; }
-        public List<Modelo>? modelos_cartucho_compatibles { get; set; }
+        public List<ImpresoraModelo>? ImpresoraModelos { get; set; } 
     }
 }

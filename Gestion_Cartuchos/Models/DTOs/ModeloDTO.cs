@@ -4,9 +4,9 @@ namespace Models.DTOs
     {
         public int Id { get; set; }
         public required string modelo_cartuchos { get; set; }
-        
         public required string marca { get; set; }
-        
-        public int stock { get; set; } = 1;
+        public required int stock { get; set; }
+       
     }
+
 }
