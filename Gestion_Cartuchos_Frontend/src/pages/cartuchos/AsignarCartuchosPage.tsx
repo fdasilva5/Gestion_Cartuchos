@@ -62,7 +62,7 @@ type Assignment = {
   impresora_id: number;
   impresora: Impresora;
   oficina_id: number;
-  oficina:Oficina;
+  oficina: Oficina;
   cartucho_id: number;
   cartucho: Cartucho;
   fecha_asignacion: string;
@@ -73,6 +73,7 @@ type Assignment = {
 const AsignarCartuchosPage = () => {
   const [impresoras, setImpresoras] = useState<Impresora[]>([]);
   const [cartuchos, setCartuchos] = useState<Cartucho[]>([]);
+  const [compatibleCartuchos, setCompatibleCartuchos] = useState<Cartucho[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedImpresora, setSelectedImpresora] = useState<number | ''>('');
   const [selectedCartucho, setSelectedCartucho] = useState<number | ''>('');
@@ -179,14 +180,14 @@ const AsignarCartuchosPage = () => {
     setSelectedImpresora(impresoraId);
     if (impresoraId) {
       try {
-        const response = await fetch(`${API_URL}/api/Cartucho/impresora/${impresoraId}`);
-        const compatibleCartuchos = await response.json();
-        setCartuchos(compatibleCartuchos);
+        const response = await fetch(`${API_URL}/api/Impresora/modelos?impresoraId=${impresoraId}`);
+        const compatibleCartuchosData = await response.json();
+        setCompatibleCartuchos(compatibleCartuchosData);
       } catch (error) {
         console.error('Error fetching compatible cartuchos:', error);
       }
     } else {
-      setCartuchos([]);
+      setCompatibleCartuchos([]);
     }
     const impresora = impresoras.find(i => i.id === impresoraId);
     if (impresora && impresora.cartucho_asignado) {

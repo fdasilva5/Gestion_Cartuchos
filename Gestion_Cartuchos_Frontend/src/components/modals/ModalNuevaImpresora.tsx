@@ -54,7 +54,7 @@ const ModalNuevaImpresora = ({
       setMarca(impresora.marca);
       setObservaciones(impresora.observaciones);
       setOficinaId(impresora.oficina_id);
-      setModelosCartuchoSeleccionados(impresora.modelo_cartucho_compatible.map((c: any) => c.id));
+      setModelosCartuchoSeleccionados(impresora.impresoraModelos.map((c: any) => c.modelo.id));
     } else {
       resetForm();
     }
@@ -137,28 +137,18 @@ const ModalNuevaImpresora = ({
 
     if (!valid) return;
 
-    const modelosCartuchoCompatible = modelosCartuchoSeleccionados.map(id => {
-      const modeloCartucho = modelosCartucho.find((m) => m.id === id);
-      return {
-        id: modeloCartucho.id,
-        modelo_cartuchos: modeloCartucho.modelo_cartuchos,
-        marca: modeloCartucho.marca,
-        stock: modeloCartucho.stock,
-      };
-    });
-
     const oficina = oficinas.find((o) => o.id === oficinaId);
 
     const impresoraDTO = {
+      id: impresora?.id || 0,
       modelo: modelo,
       marca: marca,
-      observaciones: observaciones,
       oficina_id: oficinaId,
       oficina: {
         id: oficina.id,
         nombre: oficina.nombre
       },
-      modelo_cartucho_compatible: modelosCartuchoCompatible,
+      compatibleModeloIds: modelosCartuchoSeleccionados,
     };
 
     setLoading(true);

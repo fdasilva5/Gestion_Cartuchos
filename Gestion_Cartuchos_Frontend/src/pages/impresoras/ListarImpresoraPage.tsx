@@ -31,7 +31,7 @@ import AddIcon from '@mui/icons-material/Add';
 import colorConfigs from '../../configs/colorConfigs'; // Ajusta la ruta según sea necesario
 import ModalNuevaImpresora from '../../components/modals/ModalNuevaImpresora'; // Ajusta la ruta según sea necesario
 
-type ModeloCartuchoCompatible = {
+type Modelo = {
   id: number;
   modelo_cartuchos: string;
   marca: string;
@@ -43,13 +43,20 @@ type Oficina = {
   nombre: string;
 };
 
+type ImpresoraModelo = {
+  id: number;
+  impresora_id: number;
+  modelo_id: number;
+  modelo: Modelo;
+};
+
 type Impresora = {
   id: number;
   modelo: string;
   marca: string;
   oficina_id: number;
   oficina: Oficina;
-  modelo_cartucho_compatible: ModeloCartuchoCompatible[];
+  impresora_modelos: ImpresoraModelo[];
 };
 
 const ListaImpresorasPage = () => {
@@ -63,6 +70,7 @@ const ListaImpresorasPage = () => {
   const [openAssignModal, setOpenAssignModal] = useState(false);
   const [selectedCartucho, setSelectedCartucho] = useState<number | undefined>(undefined);
   const [observaciones, setObservaciones] = useState('');
+  const [compatibleCartuchos, setCompatibleCartuchos] = useState<Modelo[]>([]);
 
   const API_URL = "http://localhost:5204";
 
@@ -85,11 +93,21 @@ const ListaImpresorasPage = () => {
     (modeloFiltro ? impresora.modelo === modeloFiltro : true)
   );
 
-  const toggleImpresora = (id: number) => {
+  const toggleImpresora = async (id: number) => {
     setImpresorasExpandidas(prevState => ({
       ...prevState,
       [id]: !prevState[id],
     }));
+
+    if (!impresorasExpandidas[id]) {
+      try {
+        const response = await fetch(`${API_URL}/api/Impresora/modelos?impresoraId=${id}`);
+        const compatibleCartuchosData = await response.json();
+        setCompatibleCartuchos(compatibleCartuchosData);
+      } catch (error) {
+        console.error('Error fetching compatible cartuchos:', error);
+      }
+    }
   };
 
   const handleAddImpresora = () => {
@@ -232,7 +250,13 @@ const ListaImpresorasPage = () => {
                       <TableCell>{impresora.marca}</TableCell>
                       <TableCell>{impresora.oficina.nombre}</TableCell>
                       <TableCell>
-                        
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleAssignCartucho(impresora)}
+                        >
+                          Asignar Cartucho
+                        </Button>
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -240,10 +264,10 @@ const ListaImpresorasPage = () => {
                         <Collapse in={impresorasExpandidas[impresora.id]} timeout="auto" unmountOnExit>
                           <Box margin={1} sx={{ backgroundColor: '#f9f9f9', padding: 2 }}>
                             <Typography variant="h6" gutterBottom component="div">
-                              Modelo de cartuchos compatibles con esta impresora
+                              Modelos de cartuchos compatibles con esta impresora
                             </Typography>
                             <ul>
-                              {impresora.modelo_cartucho_compatible.map(cartucho => (
+                              {compatibleCartuchos.map(cartucho => (
                                 <li key={cartucho.id}>
                                   {cartucho.modelo_cartuchos} - {cartucho.marca} (Stock: {cartucho.stock})
                                 </li>
@@ -284,7 +308,7 @@ const ListaImpresorasPage = () => {
               onChange={(e) => setSelectedCartucho(Number(e.target.value))}
               label="Cartucho"
             >
-              {selectedImpresora?.modelo_cartucho_compatible.map(cartucho => (
+              {compatibleCartuchos.map(cartucho => (
                 <MenuItem key={cartucho.id} value={cartucho.id}>
                   {cartucho.modelo_cartuchos} - {cartucho.marca}
                 </MenuItem>
