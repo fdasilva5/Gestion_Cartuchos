@@ -9,7 +9,6 @@ Env.Load();
 string myAllowSpecificOrigins = Environment.GetEnvironmentVariable("MY_ALLOW_SPECIFIC_ORIGINS");
 
 
-// Configurar CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins", policy =>
@@ -21,10 +20,12 @@ builder.Services.AddCors(options =>
 });
 
 var services = builder.Services;
-builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+services.AddControllers();
+services.AddMemoryCache(); //falta inyectar en los servicios
+builder.Logging.AddJsonConsole();   
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(); 
 
 //Services
 services.AddScoped<CartuchoService>();

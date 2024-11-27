@@ -47,6 +47,12 @@ namespace Services
 
         public async Task<Cartucho> Create(CartuchoDTO cartuchoDTO)
         {
+            var existeCartucho = await _context.Cartuchos.FirstOrDefaultAsync(x => x.numero_serie == cartuchoDTO.numero_serie);
+            if (existeCartucho != null)
+            {
+            throw new ArgumentException("El número de serie ya existe.");
+            }
+
             var cartucho = _mapper.Map<Cartucho>(cartuchoDTO);
             
             cartucho.modelo = await _context.Modelos.FirstOrDefaultAsync(x => x.Id == cartuchoDTO.modelo_id);

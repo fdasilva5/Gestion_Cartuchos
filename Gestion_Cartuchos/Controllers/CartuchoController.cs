@@ -36,10 +36,23 @@ namespace Controllers
     }
 
     [HttpPost]
-    public async Task<Cartucho> Create(CartuchoDTO cartuchoDTO)
+    public async Task<IActionResult> Create(CartuchoDTO cartuchoDTO)
     {
-        return await _cartuchoService.Create(cartuchoDTO);
+        try
+        {
+            var cartucho = await _cartuchoService.Create(cartuchoDTO);
+            return Ok(cartucho); 
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Ocurrió un error inesperado." });
+        }
     }
+
 
     [HttpPut("{id}")]
     public async Task Update(int id, CartuchoDTO cartuchoDTO)
