@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -12,10 +12,13 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBarcode, faCalendar, faComment } from "@fortawesome/free-solid-svg-icons";
+  Checkbox,
+  ListItemText,
+  SelectChangeEvent,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComment } from '@fortawesome/free-solid-svg-icons';
 import { show_alerta } from '../../helpers/funcionSweetAlert';
 
 const ModalNuevoCartucho = ({
@@ -29,26 +32,20 @@ const ModalNuevoCartucho = ({
   onSave: (cartucho: any) => void;
   cartucho?: any;
 }) => {
-  const [numeroSerie, setNumeroSerie] = useState("");
-  const [fechaAlta, setFechaAlta] = useState("");
-  const [observaciones, setObservaciones] = useState("");
-  const [modeloId, setModeloId] = useState(0);
+  const [numeroSerie, setNumeroSerie] = useState('');
+  const [modelo, setModelo] = useState<any>(null);
+  const [observaciones, setObservaciones] = useState('');
   const [modelos, setModelos] = useState<any[]>([]);
-  const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(false);
-  // Estados de error
-  const [numeroSerieError, setNumeroSerieError] = useState("");
-  const [fechaAltaError, setFechaAltaError] = useState("");
-  const [modeloIdError, setModeloIdError] = useState("");
+  const [error, setError] = useState('');
 
   const API_URL = "http://localhost:5204";
 
   useEffect(() => {
     if (cartucho) {
       setNumeroSerie(cartucho.numero_serie);
-      setFechaAlta(cartucho.fecha_alta);
+      setModelo(cartucho.modelo);
       setObservaciones(cartucho.observaciones);
-      setModeloId(cartucho.modelo_id);
     } else {
       resetForm();
     }
@@ -67,13 +64,11 @@ const ModalNuevoCartucho = ({
     fetchModelos();
   }, []);
 
-  // Resetear el formulario
   const resetForm = () => {
-    setNumeroSerie("");
-    setFechaAlta(new Date().toISOString().split('T')[0]); // Fecha actual
-    setObservaciones("");
-    setModeloId(0);
-    setMensaje("");
+    setNumeroSerie('');
+    setModelo(null);
+    setObservaciones('');
+    setError('');
   };
 
   useEffect(() => {
@@ -85,42 +80,15 @@ const ModalNuevoCartucho = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
-    // Validaciones
-    let valid = true;
-    if (!numeroSerie) {
-      setNumeroSerieError("Este campo es requerido.");
-      valid = false;
-    } else {
-      setNumeroSerieError("");
-    }
-
-    if (!fechaAlta) {
-      setFechaAltaError("Este campo es requerido.");
-      valid = false;
-    } else {
-      setFechaAltaError("");
-    }
-
-    if (!modeloId) {
-      setModeloIdError("Selecciona un modelo.");
-      valid = false;
-    } else {
-      setModeloIdError("");
-    }
-
-    if (!valid) return; 
-
-    const modelo = modelos.find((m) => m.id === modeloId);
-
     const cartuchoDTO = {
+      id: cartucho?.id || 0,
       numero_serie: numeroSerie,
-      fecha_alta: fechaAlta,
-      cantidad_recargas: 0,
-      observaciones: observaciones,
-      modelo_id: modeloId,
+      fecha_alta: new Date().toISOString().split('T')[0], // Assuming current date as fecha_alta
+      cantidad_recargas: 0, // Assuming 0 as cantidad_recargas
+      observaciones,
+      modelo_id: modelo?.id || 0,
       estado_id: 1,
-      modelo: modelo ? { id: modelo.id, marca: modelo.marca,modelo_cartuchos: modelo.modelo_cartuchos, stock: modelo.stock } : null,
+      modelo: modelo ? { id: modelo.id, marca: modelo.marca, modelo_cartuchos: modelo.modelo_cartuchos, stock: modelo.stock } : null,
       estado: { id: 1, nombre: "Disponible" },
     };
 
@@ -132,7 +100,7 @@ const ModalNuevoCartucho = ({
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cartuchoDTO), 
+        body: JSON.stringify(cartuchoDTO),
       });
 
       if (response.ok) {
@@ -143,10 +111,16 @@ const ModalNuevoCartucho = ({
         onClose();
       } else {
         const errorData = await response.json();
+        if (errorData.message.includes("El número de serie ya existe.")) {
+          setError("El número de serie ya existe.");
+        } else {
+          setError(errorData.message || response.statusText);
+        }
         console.error(`Error: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
+      setError("Ocurrió un error inesperado.");
       show_alerta("Ocurrió un error inesperado.", "error");
     } finally {
       setLoading(false);
@@ -180,27 +154,23 @@ const ModalNuevoCartucho = ({
             value={numeroSerie}
             onChange={(e) => setNumeroSerie(e.target.value)}
             sx={{ mb: 2 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FontAwesomeIcon icon={faBarcode} />
-                </InputAdornment>
-              ),
-            }}
-            error={Boolean(numeroSerieError)}
-            helperText={numeroSerieError}
+            error={Boolean(error)}
+            helperText={error}
           />
-          <TextField
-            fullWidth
-            label="Fecha de Alta"
-            type="date"
-            value={fechaAlta}
-            onChange={(e) => setFechaAlta(e.target.value)}
-            sx={{ mb: 2 }}
-            InputLabelProps={{ shrink: true }}
-            error={Boolean(fechaAltaError)}
-            helperText={fechaAltaError}
-          />
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Modelo</InputLabel>
+            <Select
+              value={modelo?.id || ''}
+              onChange={(e) => setModelo(modelos.find(m => m.id === e.target.value))}
+              label="Modelo"
+            >
+              {modelos.map((modelo) => (
+                <MenuItem key={modelo.id} value={modelo.id}>
+                  {modelo.modelo_cartuchos} - {modelo.marca}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             fullWidth
             label="Observaciones"
@@ -215,16 +185,6 @@ const ModalNuevoCartucho = ({
               ),
             }}
           />
-          <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(modeloIdError)}>
-            <InputLabel>Modelo</InputLabel>
-            <Select value={modeloId} onChange={(e) => setModeloId(Number(e.target.value))}>
-              <MenuItem value={0}>Seleccionar Modelo</MenuItem>
-              {modelos.map((modelo) => (
-                <MenuItem key={modelo.id} value={modelo.id}>{modelo.marca}</MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{modeloIdError}</FormHelperText>
-          </FormControl>
           <Button type="submit" variant="contained" color="primary" disabled={loading}>
             {loading ? 'Guardando...' : 'Guardar'}
           </Button>
