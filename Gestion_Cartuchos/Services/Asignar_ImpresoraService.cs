@@ -66,10 +66,10 @@ namespace Services
 
             var asignar_impresora = _mapper.Map<Asignar_Impresora>(asignar_impresoraDTO);
 
-            var imporesora_con_cartucho_asignado = await _context.Asignar_Impresoras
-                .FirstOrDefaultAsync(x => x.impresora.Id == asignar_impresoraDTO.impresora_id);
+            var impresoraConCartuchoAsignado = await _context.Asignar_Impresoras
+                .FirstOrDefaultAsync(x => x.impresora_id == asignar_impresoraDTO.impresora_id && x.fecha_desasignacion == null);
 
-            if (imporesora_con_cartucho_asignado != null && imporesora_con_cartucho_asignado.fecha_desasignacion == null)
+            if (impresoraConCartuchoAsignado != null)
             {
                 throw new InvalidOperationException("Esta impresora ya tiene un cartucho asignado");
             }

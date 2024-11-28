@@ -28,9 +28,17 @@ namespace Controllers
     }
 
     [HttpPost]
-    public async Task<Asignar_Impresora> Create(Asignar_Impresora_DTO asignar_Impresora_DTO)
+    public async Task<IActionResult> Create(Asignar_Impresora_DTO asignar_Impresora_DTO)
     {
-        return await _asignar_ImpresoraService.Create(asignar_Impresora_DTO);
+        try
+        {
+            var result = await _asignar_ImpresoraService.Create(asignar_Impresora_DTO);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
