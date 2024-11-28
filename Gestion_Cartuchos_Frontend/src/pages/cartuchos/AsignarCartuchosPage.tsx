@@ -80,6 +80,7 @@ const AsignarCartuchosPage = () => {
   const [observaciones, setObservaciones] = useState('');
   const [impresoraFilter, setImpresoraFilter] = useState('');
   const [cartuchoFilter, setCartuchoFilter] = useState('');
+  const [error, setError] = useState('');
 
   const API_URL = "http://localhost:5204";
 
@@ -157,7 +158,7 @@ const AsignarCartuchosPage = () => {
       };
 
       try {
-        await fetch(`${API_URL}/api/Asignar_Impresora`, {
+        const response = await fetch(`${API_URL}/api/Asignar_Impresora`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -165,13 +166,25 @@ const AsignarCartuchosPage = () => {
           },
           body: JSON.stringify(assignment), // Include assignment field
         });
-        // Reset form fields after successful submission
-        setSelectedImpresora('');
-        setSelectedCartucho('');
-        setObservaciones('');
-        fetchData(); // Refresh data to show updated assignments
+
+        if (response.ok) {
+          // Reset form fields after successful submission
+          setSelectedImpresora('');
+          setSelectedCartucho('');
+          setObservaciones('');
+          fetchData(); // Refresh data to show updated assignments
+        } else {
+          const errorData = await response.json();
+          if (errorData.message && errorData.message.includes("Esta impresora ya tiene un cartucho asignado")) {
+            setError("Esta impresora ya tiene un cartucho asignado.");
+          } else {
+            setError(errorData.message || response.statusText);
+          }
+          console.error(`Error: ${errorData.message || response.statusText}`);
+        }
       } catch (error) {
-        console.error('Error assigning cartucho:', error);
+        console.error("Error en la solicitud:", error);
+        setError("Ocurrió un error inesperado.");
       }
     }
   };
@@ -299,6 +312,13 @@ const AsignarCartuchosPage = () => {
               </Select>
             </FormControl>
           </Grid>
+          {error && (
+            <Grid item xs={12}>
+              <Typography color="error" align="center">
+                {error}
+              </Typography>
+            </Grid>
+          )}
           <Grid item xs={12}>
             <TextField
               variant="outlined"

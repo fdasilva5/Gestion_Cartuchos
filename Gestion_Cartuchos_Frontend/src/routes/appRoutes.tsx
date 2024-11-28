@@ -14,6 +14,7 @@ import ImpresoraPageLayout from "../pages/impresoras/ImpresoraPageLayout";
 import ListaImpresorasPage from "../pages/impresoras/ListarImpresoraPage";
 import ListarModelosCartuchosPage from "../pages/cartuchos/ListarModelosCartuchosPage";
 import ListarOficinasPage from "../pages/oficinas/ListarOficinasPage";
+import RecargarPage from "../pages/recargas/RecargarPage";
 
 
 
@@ -85,7 +86,17 @@ const appRoutes: RouteType[] = [
     sidebarProps: {
       displayText: "Recargas",
       icon: <ArticleOutlinedIcon />
-    }
+    },
+    child: [
+      {
+        path: "/recargas/historial",
+        element: <RecargarPage />,
+        state: "recargas.historial",
+        sidebarProps: {
+          displayText: "Historial de recargas"
+        }
+      }
+    ]
   },
   {
     path: "/oficinas",
