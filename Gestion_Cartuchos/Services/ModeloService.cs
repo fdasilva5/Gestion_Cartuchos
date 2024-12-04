@@ -2,10 +2,12 @@ using AutoMapper;
 using Models;
 using Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Services
 {
-    public class ModeloService
+    public class ModeloService : IModeloService
     {
         private readonly Gestion_Cartuchos_Context _context;
         private readonly IMapper _mapper;
@@ -18,42 +20,37 @@ namespace Services
 
         public async Task<IEnumerable<ModeloDTO>> GetAll()
         {
-            var modelos = await _context.Modelos
-            .ToListAsync();
+            var modelos = await _context.Modelos.ToListAsync();
             return _mapper.Map<IEnumerable<ModeloDTO>>(modelos);
         }
 
         public async Task<ModeloDTO> GetById(int id)
         {
-            var Modelo = await _context.Modelos
-            .FirstOrDefaultAsync(x => x.Id == id);
-            return _mapper.Map<ModeloDTO>(Modelo);
+            var modelo = await _context.Modelos.FirstOrDefaultAsync(x => x.Id == id);
+            return _mapper.Map<ModeloDTO>(modelo);
         }
 
-        public async Task<ModeloDTO> Create(ModeloDTO ModeloDTO)
+        public async Task<ModeloDTO> Create(ModeloDTO modeloDTO)
         {
-            var Modelo = _mapper.Map<Modelo>(ModeloDTO);
-            _context.Modelos.Add(Modelo);
+            var modelo = _mapper.Map<Modelo>(modeloDTO);
+            _context.Modelos.Add(modelo);
             await _context.SaveChangesAsync();
-            return _mapper.Map<ModeloDTO>(Modelo);
+            return _mapper.Map<ModeloDTO>(modelo);
         }
 
-        public async Task Update(int id, ModeloDTO ModeloDTO)
+        public async Task Update(int id, ModeloDTO modeloDTO)
         {
-            var Modelo = _mapper.Map<Modelo>(ModeloDTO);
-            Modelo.Id = id;
-            _context.Entry(Modelo).State = EntityState.Modified;
+            var modelo = _mapper.Map<Modelo>(modeloDTO);
+            modelo.Id = id;
+            _context.Entry(modelo).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
         public async Task Delete(int id)
         {
-            var Modelo = await _context.Modelos.FirstOrDefaultAsync(x => x.Id == id);
-            _context.Modelos.Remove(Modelo);
+            var modelo = await _context.Modelos.FirstOrDefaultAsync(x => x.Id == id);
+            _context.Modelos.Remove(modelo);
             await _context.SaveChangesAsync();
         }
-
-        
-        
     }
 }

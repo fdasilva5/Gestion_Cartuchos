@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Services
 {
-    public class EstadoService
+    public class EstadoService : IEstadoService
     {
         private readonly Gestion_Cartuchos_Context _context;
         private readonly IMapper _mapper;
@@ -28,12 +28,12 @@ namespace Services
             return _mapper.Map<EstadoDTO>(estado);
         }
 
-        public async Task<Estado> Create(EstadoDTO estadoDTO)
+        public async Task<EstadoDTO> Create(EstadoDTO estadoDTO)
         {
             var estado = _mapper.Map<Estado>(estadoDTO);
             await _context.Estados.AddAsync(estado);
             await _context.SaveChangesAsync();
-            return estado;
+            return _mapper.Map<EstadoDTO>(estado);
         }
 
         public async Task Update(int id, EstadoDTO estadoDTO)
@@ -43,7 +43,7 @@ namespace Services
             {
                 throw new InvalidOperationException("El estado no existe");
             }
-            estado = _mapper.Map<Estado>(estadoDTO);
+            _mapper.Map(estadoDTO, estado);
             _context.Estados.Update(estado);
             await _context.SaveChangesAsync();
         }

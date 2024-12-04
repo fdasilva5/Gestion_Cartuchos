@@ -2,10 +2,12 @@ using AutoMapper;
 using Models;
 using Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Services
 {
-    public class CartuchoService 
+    public class CartuchoService : ICartuchoService
     {
         private readonly Gestion_Cartuchos_Context _context;
         private readonly IMapper _mapper;
@@ -19,9 +21,9 @@ namespace Services
         public async Task<IEnumerable<CartuchoDTO>> GetAll()
         {
             var cartuchos = await _context.Cartuchos
-            .Include(x => x.modelo)
-            .Include(x => x.estado)
-            .ToListAsync();
+                .Include(x => x.modelo)
+                .Include(x => x.estado)
+                .ToListAsync();
             return _mapper.Map<IEnumerable<CartuchoDTO>>(cartuchos);
         }
 
@@ -35,22 +37,31 @@ namespace Services
             return _mapper.Map<IEnumerable<CartuchoDTO>>(cartuchos);
         }
 
-
         public async Task<CartuchoDTO> GetById(int id)
         {
             var cartucho = await _context.Cartuchos
-            .Include(x => x.modelo)
-            .Include(x => x.estado)
-            .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(x => x.modelo)
+                .Include(x => x.estado)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<CartuchoDTO>(cartucho);
         }
 
-        public async Task<Cartucho> Create(CartuchoDTO cartuchoDTO)
+        public async Task<CartuchoDTO> Create(CartuchoDTO cartuchoDTO)
         {
+            if (string.IsNullOrWhiteSpace(cartuchoDTO.numero_serie))
+            {
+                throw new ArgumentException("El número de serie es obligatorio.");
+            }
+
+            if (cartuchoDTO.modelo_id <= 0)
+            {
+                throw new ArgumentException("El ID del modelo es obligatorio y debe ser mayor que cero.");
+            }
+            
             var existeCartucho = await _context.Cartuchos.FirstOrDefaultAsync(x => x.numero_serie == cartuchoDTO.numero_serie);
             if (existeCartucho != null)
             {
-            throw new ArgumentException("El número de serie ya existe.");
+                throw new ArgumentException("El número de serie ya existe.");
             }
 
             var cartucho = _mapper.Map<Cartucho>(cartuchoDTO);
@@ -62,7 +73,7 @@ namespace Services
             cartucho.modelo.stock += 1;
             _context.Cartuchos.Add(cartucho);
             await _context.SaveChangesAsync();
-            return cartucho;
+            return _mapper.Map<CartuchoDTO>(cartucho);
         }
 
         public async Task Update(int id, CartuchoDTO cartuchoDTO)
@@ -93,6 +104,4 @@ namespace Services
             await _context.SaveChangesAsync();
         }
     }
-
-    
 }

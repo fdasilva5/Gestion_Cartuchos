@@ -2,10 +2,12 @@ using AutoMapper;
 using Models;
 using Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Services
 {
-    public class OficinaService
+    public class OficinaService : IOficinaService
     {
         private readonly Gestion_Cartuchos_Context _context;
         private readonly IMapper _mapper;
@@ -18,15 +20,13 @@ namespace Services
 
         public async Task<IEnumerable<OficinaDTO>> GetAll()
         {
-            var oficinas = await _context.Oficinas
-            .ToListAsync();
+            var oficinas = await _context.Oficinas.ToListAsync();
             return _mapper.Map<IEnumerable<OficinaDTO>>(oficinas);
         }
 
         public async Task<OficinaDTO> GetById(int id)
         {
-            var oficina = await _context.Oficinas
-            .FirstOrDefaultAsync(x => x.Id == id);
+            var oficina = await _context.Oficinas.FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<OficinaDTO>(oficina);
         }
 
@@ -52,8 +52,5 @@ namespace Services
             _context.Oficinas.Remove(oficina);
             await _context.SaveChangesAsync();
         }
-
-        
-
     }
 }

@@ -11,9 +11,9 @@ namespace Controllers{
     [Route("api/[controller]")]
     [ApiController]
 
-    public class EstadoController(EstadoService estadoService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class EstadoController(IEstadoService estadoService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
-        private readonly EstadoService _estadoService = estadoService;
+        private readonly IEstadoService _estadoService = estadoService;
         private readonly IMapper _mapper = mapper;
         private readonly Gestion_Cartuchos_Context _context = context;
 

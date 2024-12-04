@@ -8,9 +8,9 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ModeloCOntroller(ModeloService modeloService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class ModeloCOntroller(IModeloService modeloService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
-        private readonly ModeloService _modeloService = modeloService;
+        private readonly IModeloService _modeloService = modeloService;
         private readonly IMapper _mapper = mapper;
         private readonly Gestion_Cartuchos_Context _context = context;
 

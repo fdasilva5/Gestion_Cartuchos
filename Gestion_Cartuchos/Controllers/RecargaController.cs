@@ -11,10 +11,10 @@ namespace Controllers
 
     public class RecargaController : ControllerBase
     {
-        private readonly RecargaService _recargaService;
+        private readonly IRecargaService _recargaService;
         private readonly IMapper _mapper;
 
-        public RecargaController(RecargaService recargaService, IMapper mapper)
+        public RecargaController(IRecargaService recargaService, IMapper mapper)
         {
             _recargaService = recargaService;
             _mapper = mapper;
@@ -33,9 +33,10 @@ namespace Controllers
         }
 
         [HttpPost]
-        public async Task<Recargas> Create(RecargasDTO recargaDTO)
+        public async Task<RecargasDTO> Create(RecargasDTO recargaDTO)
         {
-            return await _recargaService.Create(recargaDTO);
+            var recarga = await _recargaService.Create(recargaDTO);
+            return _mapper.Map<RecargasDTO>(recarga);
         }
 
         

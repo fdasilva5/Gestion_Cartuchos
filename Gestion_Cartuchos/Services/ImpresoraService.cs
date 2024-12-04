@@ -2,10 +2,13 @@ using AutoMapper;
 using Models;
 using Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Services
 {
-    public class ImpresoraService
+    public class ImpresoraService : IImpresoraService
     {
         private readonly Gestion_Cartuchos_Context _context;
         private readonly IMapper _mapper;
@@ -29,27 +32,37 @@ namespace Services
         public async Task<IEnumerable<ImpresoraDTO>> GetAll()
         {
             var impresoras = await _context.Impresoras
-            .Include(x => x.ImpresoraModelos)
-            .Include(x => x.oficina)
-            .ToListAsync();
+                .Include(x => x.ImpresoraModelos)
+                .Include(x => x.oficina)
+                .ToListAsync();
             return _mapper.Map<IEnumerable<ImpresoraDTO>>(impresoras);
         }
-
-        
 
         public async Task<ImpresoraDTO> GetById(int id)
         {
             var impresora = await _context.Impresoras
-            .Include(x => x.oficina)
-            .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(x => x.oficina)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<ImpresoraDTO>(impresora);
         }
 
-
-
         public async Task<ImpresoraDTO> Create(ImpresoraDTO impresoraDTO)
         {
-            var impresora = _mapper.Map<Impresora>(impresoraDTO);
+            if (string.IsNullOrWhiteSpace(impresoraDTO.Modelo))
+            {
+                throw new ArgumentException("El modelo es obligatorio.");
+            }
+
+            if (string.IsNullOrWhiteSpace(impresoraDTO.Marca))
+            {
+                throw new ArgumentException("La marca es obligatoria.");
+            }
+
+            if (impresoraDTO.oficina_id <= 0)
+            {
+                throw new ArgumentException("El ID de la oficina es obligatorio y debe ser mayor que cero.");
+            }
+
             var oficina = await _context.Oficinas.FindAsync(impresoraDTO.oficina_id);
 
             if (oficina == null)
@@ -57,9 +70,9 @@ namespace Services
                 throw new Exception("Oficina no encontrada");
             }
 
+            var impresora = _mapper.Map<Impresora>(impresoraDTO);
             impresora.oficina = oficina;
 
-            
             await _context.Impresoras.AddAsync(impresora);
             await _context.SaveChangesAsync();
 
@@ -67,11 +80,9 @@ namespace Services
             {
                 await CreateImpresoraModelo(impresora.Id, modeloId);
             }
-            
+
             return _mapper.Map<ImpresoraDTO>(impresora);
         }
-
-
 
         public async Task<ImpresoraModelo> CreateImpresoraModelo(int impresoraId, int modeloId)
         {
@@ -97,8 +108,6 @@ namespace Services
             return impresoraModelo;
         }
 
-
-
         public async Task Update(int id, ImpresoraDTO impresoraDTO)
         {
             var impresora = _mapper.Map<Impresora>(impresoraDTO);
@@ -113,8 +122,5 @@ namespace Services
             _context.Impresoras.Remove(impresora);
             await _context.SaveChangesAsync();
         }
-
-
-
     }
 }

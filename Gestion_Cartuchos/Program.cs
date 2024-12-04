@@ -28,13 +28,13 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(); 
 
 //Services
-services.AddScoped<CartuchoService>();
-services.AddScoped<ImpresoraService>();
-services.AddScoped<OficinaService>();
-services.AddScoped<Asignar_ImpresoraService>();
-services.AddScoped<RecargaService>();
-services.AddScoped<ModeloService>();
-services.AddScoped<EstadoService>();
+services.AddScoped<ICartuchoService,CartuchoService>();
+services.AddScoped<IImpresoraService,ImpresoraService>();
+services.AddScoped<IOficinaService,OficinaService>();
+services.AddScoped<IAsignar_Impresora_Service,Asignar_ImpresoraService>();
+services.AddScoped<IRecargaService,RecargaService>();
+services.AddScoped<IModeloService,ModeloService>();
+services.AddScoped<IEstadoService,EstadoService>();
 
 
 //BDD

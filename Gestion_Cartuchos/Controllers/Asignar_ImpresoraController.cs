@@ -8,56 +8,51 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-    public class Asignar_ImpresoraController(Asignar_ImpresoraService asignar_ImpresoraService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class Asignar_ImpresoraController : ControllerBase
     {
-        private readonly Asignar_ImpresoraService _asignar_ImpresoraService = asignar_ImpresoraService;
-        private readonly IMapper _mapper = mapper;
-        private readonly Gestion_Cartuchos_Context _context = context;
+        private readonly IAsignar_Impresora_Service _asignar_ImpresoraService;
+        private readonly IMapper _mapper;
+        private readonly Gestion_Cartuchos_Context _context;
 
-    [HttpGet]
-    public async Task<IEnumerable<Asignar_Impresora_DTO>> GetAll()
-    {
-        return await _asignar_ImpresoraService.GetAll();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<Asignar_Impresora_DTO> GetById(int id)
-    {
-        return await _asignar_ImpresoraService.GetById(id);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(Asignar_Impresora_DTO asignar_Impresora_DTO)
-    {
-        try
+        public Asignar_ImpresoraController(IAsignar_Impresora_Service asignar_ImpresoraService, IMapper mapper, Gestion_Cartuchos_Context context)
         {
-            var result = await _asignar_ImpresoraService.Create(asignar_Impresora_DTO);
-            return Ok(result);
+            _asignar_ImpresoraService = asignar_ImpresoraService;
+            _mapper = mapper;
+            _context = context;
         }
-        catch (Exception ex)
+
+        [HttpGet]
+        public async Task<IEnumerable<Asignar_Impresora_DTO>> GetAll()
         {
-            return BadRequest(new { message = ex.Message });
+            return await _asignar_ImpresoraService.GetAll();
         }
-    }
 
-    [HttpPut("{id}")]
-    public async Task Update(int id, Asignar_Impresora_DTO asignar_Impresora_DTO)
-    {
-        await _asignar_ImpresoraService.Update(id, asignar_Impresora_DTO);
-    }
+        [HttpGet("{id}")]
+        public async Task<Asignar_Impresora_DTO> GetById(int id)
+        {
+            return await _asignar_ImpresoraService.GetById(id);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task Delete(int id)
-    {
-        await _asignar_ImpresoraService.Delete(id);
-    }
+        [HttpPost]
+        public async Task<IActionResult> Create(Asignar_Impresora_DTO asignar_Impresora_DTO)
+        {
+            try
+            {
+                var result = await _asignar_ImpresoraService.Create(asignar_Impresora_DTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
-    [HttpPost("desasignar")]
-    public async Task DesasignarCartucho( int cartuchoId)
-    {
-        await _asignar_ImpresoraService.DesasignarCartucho(cartuchoId);
-    }
+      
 
+        [HttpPost("desasignar")]
+        public async Task DesasignarCartucho(int cartuchoId)
+        {
+            await _asignar_ImpresoraService.DesasignarCartucho(cartuchoId);
+        }
     }
 }

@@ -9,9 +9,9 @@ namespace Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class CartuchoController(CartuchoService cartuchoService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class CartuchoController(ICartuchoService cartuchoService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
-        private readonly CartuchoService _cartuchoService = cartuchoService;
+        private readonly ICartuchoService _cartuchoService = cartuchoService;
         private readonly IMapper _mapper = mapper;
         private readonly Gestion_Cartuchos_Context _context = context;
     
@@ -47,7 +47,7 @@ namespace Controllers
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception )
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Ocurrió un error inesperado." });
         }
@@ -61,9 +61,10 @@ namespace Controllers
     }
 
     [HttpPut("estadoEnRecarga/{id}")]
-    public async Task UpdateEstado(int id)
+    public async Task<IActionResult> UpdateEstado(int id)
     {
         await _cartuchoService.ChangeEstadoToEnRecarga(id);
+        return Ok();
     }
 
     [HttpDelete("{id}")]

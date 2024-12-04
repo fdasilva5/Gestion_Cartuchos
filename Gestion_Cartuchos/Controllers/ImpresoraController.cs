@@ -11,16 +11,17 @@ namespace Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class ImpresoraController(ImpresoraService impresoraService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class ImpresoraController(IImpresoraService impresoraService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
-        private readonly ImpresoraService _impresoraService = impresoraService;
+        private readonly IImpresoraService _impresoraService = impresoraService;
         private readonly IMapper _mapper = mapper;
         private readonly Gestion_Cartuchos_Context _context = context;
 
     [HttpGet]
-    public async Task<IEnumerable<ImpresoraDTO>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return await _impresoraService.GetAll();
+        var result = await _impresoraService.GetAll();
+        return Ok(result);
     }
 
     [HttpGet("modelos")]
@@ -36,10 +37,21 @@ namespace Controllers
     }
 
     [HttpPost]
-    public async Task<Impresora> Create(ImpresoraDTO impresoraDTO)
+    public async Task<IActionResult> Create(ImpresoraDTO impresoraDTO)
     {
-        var impresora = await _impresoraService.Create(impresoraDTO);
-        return _mapper.Map<Impresora>(impresora);
+        try
+        {
+            var impresora = await _impresoraService.Create(impresoraDTO);
+            return Ok(impresora);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception)
+            {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Ocurrió un error inesperado." });
+        }
     }
 
     [HttpPut("{id}")]

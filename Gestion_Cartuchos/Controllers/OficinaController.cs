@@ -11,9 +11,9 @@ namespace Controllers{
     [Route("api/[controller]")]
     [ApiController]
 
-    public class OficinaController(OficinaService oficinaService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
+    public class OficinaController(IOficinaService oficinaService, IMapper mapper, Gestion_Cartuchos_Context context) : ControllerBase
     {
-        private readonly OficinaService _oficinaService = oficinaService;
+        private readonly IOficinaService _oficinaService = oficinaService;
         private readonly IMapper _mapper = mapper;
         private readonly Gestion_Cartuchos_Context _context = context;
 
