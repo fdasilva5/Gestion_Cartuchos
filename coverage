@@ -1,0 +1,5 @@
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+
+//Instale dotnet add package FluentAssertions para manejo de excepciones 
+
