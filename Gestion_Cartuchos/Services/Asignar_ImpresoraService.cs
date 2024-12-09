@@ -2,8 +2,6 @@ using AutoMapper;
 using Models;
 using Models.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Services
 {
@@ -40,30 +38,71 @@ namespace Services
             return _mapper.Map<Asignar_Impresora_DTO>(asignar_impresora);
         }
 
-        public async Task<Asignar_Impresora_DTO> Create(Asignar_Impresora_DTO asignar_impresoraDTO)
+        public async Task<Asignar_Impresora> Create(Asignar_Impresora_DTO asignar_impresoraDTO)
         {
-            if (asignar_impresoraDTO.impresora_id <= 0)
+            if (asignar_impresoraDTO == null)
             {
-                throw new ArgumentException("El ID de la impresora es obligatorio y debe ser mayor que cero.");
+                throw new ArgumentNullException(nameof(asignar_impresoraDTO));
             }
 
-            if (asignar_impresoraDTO.cartucho_id <= 0)
-            {
-                throw new ArgumentException("El ID del cartucho es obligatorio y debe ser mayor que cero.");
-            }
-            
-            var existingAssignment = await _context.Asignar_Impresoras
-                .Where(x => x.impresora_id == asignar_impresoraDTO.impresora_id && x.fecha_desasignacion == null)
-                .FirstOrDefaultAsync();
-
-            if (existingAssignment != null)
-            {
-                throw new InvalidOperationException("La impresora ya tiene un cartucho asignado.");
-            }
             var asignar_impresora = _mapper.Map<Asignar_Impresora>(asignar_impresoraDTO);
+
+            var impresoraConCartuchoAsignado = await _context.Asignar_Impresoras
+                .FirstOrDefaultAsync(x => x.impresora_id == asignar_impresoraDTO.impresora_id && x.fecha_desasignacion == null);
+
+            if (impresoraConCartuchoAsignado != null)
+            {
+                throw new InvalidOperationException("Esta impresora ya tiene un cartucho asignado");
+            }
+
+            var cartucho_en_uso = await _context.Asignar_Impresoras
+                .FirstOrDefaultAsync(x => x.cartucho.Id == asignar_impresoraDTO.cartucho_id && x.fecha_desasignacion == null);
+
+            if (cartucho_en_uso != null)
+            {
+                throw new InvalidOperationException("Este cartucho ya está asignado a una impresora");
+            }
+
+            asignar_impresora.impresora = await _context.Impresoras.FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.impresora_id);
+            if (asignar_impresora.impresora == null)
+            {
+                throw new InvalidOperationException("La impresora especificada no existe");
+            }
+
+
+
+            asignar_impresora.cartucho = await _context.Cartuchos
+                .Include(c => c.modelo)
+                .FirstOrDefaultAsync(x => x.Id == asignar_impresoraDTO.cartucho_id);
+            if (asignar_impresora.cartucho == null)
+            {
+                throw new InvalidOperationException("El cartucho especificado no existe");
+            }
+
+            if (asignar_impresora.cartucho.estado_id != 1)
+            {
+                throw new InvalidOperationException("El cartucho especificado no está disponible para asignación");
+            }
+
+            asignar_impresora.fecha_asignacion = DateOnly.FromDateTime(DateTime.Now);
+            asignar_impresora.cartucho.estado = await _context.Estados.FirstOrDefaultAsync(x => x.Id == 2);
+            if (asignar_impresora.cartucho.estado == null)
+            {
+                throw new InvalidOperationException("El estado especificado no existe");
+            }
+
+            asignar_impresora.cartucho.estado_id = 2;
+
+            if (asignar_impresora.cartucho.modelo == null)
+            {
+                throw new InvalidOperationException("El modelo del cartucho especificado no existe");
+            }
+
+            asignar_impresora.cartucho.modelo.stock -= 1;
+
             _context.Asignar_Impresoras.Add(asignar_impresora);
             await _context.SaveChangesAsync();
-            return _mapper.Map<Asignar_Impresora_DTO>(asignar_impresora);
+            return asignar_impresora;
         }
 
         public async Task<Asignar_Impresora_DTO> Update(int id, Asignar_Impresora_DTO asignar_impresoraDTO)
