@@ -69,7 +69,13 @@ namespace Services
                 throw new InvalidOperationException("La impresora especificada no existe");
             }
 
+            var compatibilidad = await _context.ImpresoraModelos
+                .FirstOrDefaultAsync(x => x.impresora_id == asignar_impresora.impresora_id && x.modelo_id == asignar_impresora.cartucho.modelo_id);
 
+            if (compatibilidad == null)
+            {
+                throw new InvalidOperationException("El cartucho especificado no es compatible con la impresora");
+            }
 
             asignar_impresora.cartucho = await _context.Cartuchos
                 .Include(c => c.modelo)
