@@ -53,7 +53,7 @@ namespace Services
 
             recarga.cartucho.cantidad_recargas += 1;
 
-            if (recarga.cartucho.cantidad_recargas == 4)
+            if (recarga.cartucho.cantidad_recargas > 4)
             {
                 throw new InvalidOperationException("El cartucho ya alcanzó el máximo de recargas permitidas");
             }
