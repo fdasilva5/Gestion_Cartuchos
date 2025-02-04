@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Models;
 using Models.DTOs;
 using Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Controllers{
-
+    
     [Route("api/[controller]")]
     [ApiController]
 

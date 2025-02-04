@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
 using Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Controllers
 {

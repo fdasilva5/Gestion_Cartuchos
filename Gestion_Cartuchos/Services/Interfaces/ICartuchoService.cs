@@ -13,5 +13,6 @@ namespace Services
         Task Update(int id, CartuchoDTO cartuchoDTO);
         Task ChangeEstadoToEnRecarga(int id);
         Task Delete(int id);
+        Task<IEnumerable<ModeloDTO>> GetModelosCompatiblesConImpresora(int impresoraId);
     }
 }

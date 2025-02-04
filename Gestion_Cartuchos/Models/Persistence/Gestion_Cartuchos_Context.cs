@@ -1,10 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 
 namespace Models
 {
-    public class Gestion_Cartuchos_Context : DbContext
+    public class Gestion_Cartuchos_Context : IdentityDbContext<ApplicationUser>
     {
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             Env.Load(); // Cargar el archivo .env

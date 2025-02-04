@@ -37,6 +37,18 @@ namespace Services
             return _mapper.Map<IEnumerable<CartuchoDTO>>(cartuchos);
         }
 
+        public async Task<IEnumerable<ModeloDTO>> GetModelosCompatiblesConImpresora(int impresoraId)
+        {
+            var modelos = await _context.ImpresoraModelos
+            .Where(im => im.impresora_id == impresoraId)
+            .Select(im => im.modelo)
+            .Distinct()
+            .Where(m => m.Cartuchos.Any(c => c.estado_id == 1)) 
+            .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ModeloDTO>>(modelos);
+        }
+
         public async Task<CartuchoDTO> GetById(int id)
         {
             var cartucho = await _context.Cartuchos

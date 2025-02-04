@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Models
 {
@@ -10,6 +11,8 @@ namespace Models
         public required string marca { get; set; }
     
         public required int stock { get; set; } = 1;
-       
+        
+        [JsonIgnore]
+        public ICollection<Cartucho> Cartuchos { get; set; } = new List<Cartucho>();
     }
 }

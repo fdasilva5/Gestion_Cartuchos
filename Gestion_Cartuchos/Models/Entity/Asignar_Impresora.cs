@@ -9,5 +9,6 @@ namespace Models
         public required Cartucho cartucho { get; set; }
         public DateOnly fecha_asignacion { get; set; }
         public DateOnly? fecha_desasignacion { get; set; } 
+        public string? observaciones { get; set; }
     }
 }

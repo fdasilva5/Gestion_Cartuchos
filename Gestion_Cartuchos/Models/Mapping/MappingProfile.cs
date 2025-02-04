@@ -10,7 +10,7 @@ namespace Models.Mapping
         {
             CreateMap<Cartucho, CartuchoDTO>();
             CreateMap<CartuchoDTO, Cartucho>();
-            CreateMap<Impresora, ImpresoraDTO>().ReverseMap(); // Ensure ReverseMap is used here
+            CreateMap<Impresora, ImpresoraDTO>().ReverseMap(); 
             CreateMap<Modelo, ModeloDTO>();
             CreateMap<ModeloDTO, Modelo>();
             CreateMap<ImpresoraModelo, ImpresoraModeloDTO>().ReverseMap();

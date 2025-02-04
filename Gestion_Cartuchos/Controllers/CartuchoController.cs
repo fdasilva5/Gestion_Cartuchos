@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
 using Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Controllers
-{
+{   
     [Route("api/[controller]")]
     [ApiController]
 
@@ -27,6 +29,13 @@ namespace Controllers
     {
         return await _cartuchoService.GetByEstadoDisponible();
     }
+
+    [HttpGet("compatibles/{impresoraId}")]
+    public async Task<IEnumerable<ModeloDTO>> GetModelosCompatiblesConImpresora(int impresoraId)
+    {
+        return await _cartuchoService.GetModelosCompatiblesConImpresora(impresoraId);
+    }
+
 
     
     [HttpGet("{id}")]
