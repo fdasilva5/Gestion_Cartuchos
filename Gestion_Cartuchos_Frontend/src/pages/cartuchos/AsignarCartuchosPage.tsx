@@ -193,15 +193,23 @@ const AsignarCartuchosPage = () => {
     setSelectedImpresora(impresoraId);
     if (impresoraId) {
       try {
-        const response = await fetch(`${API_URL}/api/Impresora/modelos?impresoraId=${impresoraId}`);
-        const compatibleCartuchosData = await response.json();
-        setCompatibleCartuchos(compatibleCartuchosData);
+        // Obtener los modelos de cartuchos compatibles con la impresora seleccionada
+        const response = await fetch(`${API_URL}/api/Cartucho/compatibles/${impresoraId}`);
+        const compatibleModelosData = await response.json();
+  
+        // Filtrar los cartuchos disponibles que son compatibles con la impresora
+        const cartuchosCompatibles = cartuchos.filter(cartucho =>
+          compatibleModelosData.some((modelo: ModeloCartuchoCompatible) => modelo.id === cartucho.modelo_id)
+        );
+  
+        setCompatibleCartuchos(cartuchosCompatibles);
       } catch (error) {
         console.error('Error fetching compatible cartuchos:', error);
       }
     } else {
       setCompatibleCartuchos([]);
     }
+  
     const impresora = impresoras.find(i => i.id === impresoraId);
     if (impresora && impresora.cartucho_asignado) {
       setSelectedCartucho(impresora.cartucho_asignado.id);
@@ -304,7 +312,7 @@ const AsignarCartuchosPage = () => {
                     {impresoras.find(i => i.id === selectedImpresora)?.cartucho_asignado?.numero_serie} - {impresoras.find(i => i.id === selectedImpresora)?.cartucho_asignado?.modelo.modelo_cartuchos} ({impresoras.find(i => i.id === selectedImpresora)?.cartucho_asignado?.modelo.marca})
                   </MenuItem>
                 )}
-                {filteredCartuchos.map(cartucho => (
+                {compatibleCartuchos.map(cartucho => (
                   <MenuItem key={cartucho.id} value={cartucho.id}>
                     {cartucho.numero_serie} - {cartucho.modelo.modelo_cartuchos} ({cartucho.modelo.marca})
                   </MenuItem>

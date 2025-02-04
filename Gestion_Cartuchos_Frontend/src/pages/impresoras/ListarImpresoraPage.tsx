@@ -30,6 +30,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import AddIcon from '@mui/icons-material/Add';
 import colorConfigs from '../../configs/colorConfigs'; // Ajusta la ruta según sea necesario
 import ModalNuevaImpresora from '../../components/modals/ModalNuevaImpresora'; // Ajusta la ruta según sea necesario
+import { useNavigate } from 'react-router-dom';
 
 type Modelo = {
   id: number;
@@ -63,6 +64,7 @@ const ListaImpresorasPage = () => {
   const [impresoras, setImpresoras] = useState<Impresora[]>([]);
   const [numeroSerieBuscado, setNumeroSerieBuscado] = useState('');
   const [modeloFiltro, setModeloFiltro] = useState('');
+  const [oficinaFiltro, setOficinaFiltro] = useState('');
   const [impresorasExpandidas, setImpresorasExpandidas] = useState<{ [key: number]: boolean }>({});
   const [openModal, setOpenModal] = useState(false);
   const [selectedImpresora, setSelectedImpresora] = useState<Impresora | undefined>(undefined);
@@ -74,6 +76,8 @@ const ListaImpresorasPage = () => {
 
   const API_URL = "http://localhost:5204";
 
+  const navigate = useNavigate();
+  
   const fetchImpresoras = async () => {
     try {
       const response = await fetch(`${API_URL}/api/Impresora`);
@@ -90,7 +94,8 @@ const ListaImpresorasPage = () => {
 
   const impresorasFiltradas = impresoras.filter(impresora =>
     impresora.modelo.toLowerCase().includes(numeroSerieBuscado.toLowerCase()) &&
-    (modeloFiltro ? impresora.modelo === modeloFiltro : true)
+    (modeloFiltro ? impresora.modelo === modeloFiltro : true) &&
+    (oficinaFiltro ? impresora.oficina.nombre === oficinaFiltro : true)
   );
 
   const toggleImpresora = async (id: number) => {
@@ -120,11 +125,6 @@ const ListaImpresorasPage = () => {
     setOpenModal(false); // Cerrar modal si se guardó correctamente
   };
 
-  const handleAssignCartucho = (impresora: Impresora) => {
-    setSelectedImpresora(impresora);
-    setOpenAssignModal(true);
-  };
-
   const handleSaveAssignment = async () => {
     if (selectedImpresora && selectedCartucho) {
       const assignment = {
@@ -152,6 +152,11 @@ const ListaImpresorasPage = () => {
         console.error('Error assigning cartucho:', error);
       }
     }
+  };
+
+  const handleAssignCartucho = (impresora: Impresora) => {
+    // Navega a la página específica de asignación
+    navigate(`/cartuchos/asignar`);
   };
 
   return (
@@ -221,6 +226,21 @@ const ListaImpresorasPage = () => {
               </Select>
             </FormControl>
           </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl variant="outlined" size="small" fullWidth sx={{ backgroundColor: 'white', borderRadius: 1 }}>
+              <InputLabel>Oficina</InputLabel>
+              <Select
+                value={oficinaFiltro}
+                onChange={(e) => setOficinaFiltro(e.target.value)}
+                label="Oficina"
+              >
+                <MenuItem value=""><em>Todas</em></MenuItem>
+                {impresoras.map(impresora => (
+                  <MenuItem key={impresora.oficina.id} value={impresora.oficina.nombre}>{impresora.oficina.nombre}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
       </Paper>
 
@@ -250,13 +270,13 @@ const ListaImpresorasPage = () => {
                       <TableCell>{impresora.marca}</TableCell>
                       <TableCell>{impresora.oficina.nombre}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleAssignCartucho(impresora)}
-                        >
-                          Asignar Cartucho
-                        </Button>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => handleAssignCartucho(impresora)}
+                            >
+                              Asignar Cartucho
+                            </Button>
                       </TableCell>
                     </TableRow>
                     <TableRow>

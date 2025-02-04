@@ -93,7 +93,6 @@ const ListarOficinasPage = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
                 <TableCell>Nombre</TableCell>
               </TableRow>
             </TableHead>
@@ -101,7 +100,6 @@ const ListarOficinasPage = () => {
               {oficinas.length > 0 ? (
                 oficinas.map(oficina => (
                   <TableRow key={oficina.id}>
-                    <TableCell>{oficina.id}</TableCell>
                     <TableCell>{oficina.nombre}</TableCell>
                   </TableRow>
                 ))

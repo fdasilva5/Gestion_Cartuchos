@@ -39,7 +39,7 @@ const appRoutes: RouteType[] = [
         element: <AsignarCartuchosPage />,
         state: "cartuchos.asignar",
         sidebarProps: {
-          displayText: "Asignar Cartuchos"
+          displayText: "Asignación de Cartuchos"
         }
       },
       {

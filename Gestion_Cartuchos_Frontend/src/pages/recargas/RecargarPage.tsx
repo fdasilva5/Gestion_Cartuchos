@@ -115,7 +115,6 @@ const RecargarPage = () => {
                 <TableCell>Número de Serie</TableCell>
                 <TableCell>Modelo</TableCell>
                 <TableCell>Marca</TableCell>
-                <TableCell>Estado</TableCell>
                 <TableCell>Observaciones</TableCell>
               </TableRow>
             </TableHead>
@@ -127,8 +126,7 @@ const RecargarPage = () => {
                     <TableCell>{recarga.cartucho.numero_serie}</TableCell>
                     <TableCell>{recarga.cartucho.modelo.modelo_cartuchos}</TableCell>
                     <TableCell>{recarga.cartucho.modelo.marca}</TableCell>
-                    <TableCell>{recarga.cartucho.estado.nombre}</TableCell>
-                    <TableCell>{recarga.observaciones}</TableCell>
+                   <TableCell>{recarga.observaciones}</TableCell>
                   </TableRow>
                 ))
               ) : (

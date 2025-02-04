@@ -11,9 +11,12 @@ import {
   TableRow,
   Typography,
   Paper,
-  IconButton,
   Container,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import colorConfigs from '../../configs/colorConfigs'; // Ajusta la ruta según sea necesario
@@ -30,6 +33,8 @@ const ListarModelosCartuchosPage = () => {
   const [modelosCartucho, setModelosCartucho] = useState<ModeloCartucho[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [modeloFiltro, setModeloFiltro] = useState('');
+  const [tipoModeloFiltro, setTipoModeloFiltro] = useState('');
 
   const API_URL = "http://localhost:5204";
 
@@ -55,6 +60,11 @@ const ListarModelosCartuchosPage = () => {
     await fetchModelosCartucho(); // Recargar la lista de modelos de cartuchos
     setOpenModal(false); // Cerrar modal si se guardó correctamente
   };
+
+  const modelosCartuchoFiltrados = modelosCartucho.filter(modelo =>
+    modelo.modelo_cartuchos.toLowerCase().includes(modeloFiltro.toLowerCase()) &&
+    (tipoModeloFiltro ? modelo.modelo_cartuchos === tipoModeloFiltro : true)
+  );
 
   return (
     <Container maxWidth="lg">
@@ -92,6 +102,25 @@ const ListarModelosCartuchosPage = () => {
       <br />
       <Divider />
 
+      <Paper elevation={5} sx={{ padding: '2rem', marginBottom: '2rem' }}>
+        <Typography variant="h5" gutterBottom>
+          Aplicar Filtros
+        </Typography>
+        <FormControl variant="outlined" fullWidth sx={{ marginBottom: 2 }}>
+          <InputLabel>Tipo de Modelo</InputLabel>
+          <Select
+            value={tipoModeloFiltro}
+            onChange={(e) => setTipoModeloFiltro(e.target.value)}
+            label="Tipo de Modelo"
+          >
+            <MenuItem value=""><em>Todos</em></MenuItem>
+            {modelosCartucho.map(modelo => (
+              <MenuItem key={modelo.id} value={modelo.modelo_cartuchos}>{modelo.modelo_cartuchos}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Paper>
+
       <Paper elevation={5} sx={{ padding: '2rem' }}>
         <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
           <Table stickyHeader>
@@ -103,8 +132,8 @@ const ListarModelosCartuchosPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {modelosCartucho.length > 0 ? (
-                modelosCartucho.map(modelo => (
+              {modelosCartuchoFiltrados.length > 0 ? (
+                modelosCartuchoFiltrados.map(modelo => (
                   <TableRow key={modelo.id}>
                     <TableCell>{modelo.modelo_cartuchos}</TableCell>
                     <TableCell>{modelo.marca}</TableCell>
@@ -113,7 +142,7 @@ const ListarModelosCartuchosPage = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
+                  <TableCell colSpan={3} align="center">
                     <Typography>No se encontraron modelos de cartuchos.</Typography>
                   </TableCell>
                 </TableRow>

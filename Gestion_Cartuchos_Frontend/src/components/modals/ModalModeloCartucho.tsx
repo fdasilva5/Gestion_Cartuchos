@@ -153,16 +153,7 @@ const ModalModeloCartucho = ({
             error={Boolean(marcaError)}
             helperText={marcaError}
           />
-          <TextField
-            fullWidth
-            label="Stock"
-            type="number"
-            value={stock}
-            onChange={(e) => setStock(Number(e.target.value))}
-            sx={{ mb: 2 }}
-            error={Boolean(stockError)}
-            helperText={stockError}
-          />
+        
           <Button type="submit" variant="contained" color="primary" disabled={loading}>
             {loading ? 'Guardando...' : 'Guardar'}
           </Button>
