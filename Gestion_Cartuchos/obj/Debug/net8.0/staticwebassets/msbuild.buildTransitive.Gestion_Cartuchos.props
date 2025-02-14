@@ -1,3 +1,3 @@
 ﻿<Project>
-  <Import Project="../buildMultiTargeting/Gestion_Cartuchos.props" />
+  <Import Project="..\buildMultiTargeting\Gestion_Cartuchos.props" />
 </Project>

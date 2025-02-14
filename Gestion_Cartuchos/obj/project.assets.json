@@ -7534,19 +7534,19 @@
     ]
   },
   "packageFolders": {
-    "/home/franco/.nuget/packages/": {}
+    "C:\\Users\\Franco\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/franco/Documentos/Psicologia/Gestion de Cartuchos/Repositorio/Gestion_Cartuchos/Gestion_Cartuchos.csproj",
+      "projectUniqueName": "C:\\Users\\Franco\\Desktop\\Repositorios\\Cartuchos\\Gestion_Cartuchos\\Gestion_Cartuchos\\Gestion_Cartuchos.csproj",
       "projectName": "Gestion_Cartuchos",
-      "projectPath": "/home/franco/Documentos/Psicologia/Gestion de Cartuchos/Repositorio/Gestion_Cartuchos/Gestion_Cartuchos.csproj",
-      "packagesPath": "/home/franco/.nuget/packages/",
-      "outputPath": "/home/franco/Documentos/Psicologia/Gestion de Cartuchos/Repositorio/Gestion_Cartuchos/obj/",
+      "projectPath": "C:\\Users\\Franco\\Desktop\\Repositorios\\Cartuchos\\Gestion_Cartuchos\\Gestion_Cartuchos\\Gestion_Cartuchos.csproj",
+      "packagesPath": "C:\\Users\\Franco\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Franco\\Desktop\\Repositorios\\Cartuchos\\Gestion_Cartuchos\\Gestion_Cartuchos\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/franco/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Franco\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -7564,6 +7564,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -7626,7 +7631,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.112/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

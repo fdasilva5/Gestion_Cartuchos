@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<Gestion_Cartuchos_Context>()
     .AddDefaultTokenProviders();
@@ -17,9 +19,20 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins", policy =>
     {
-        policy.WithOrigins(myAllowSpecificOrigins)
-              .WithMethods("GET", "POST", "DELETE", "PUT")
-              .AllowAnyHeader();
+       // Asegúrate de que myAllowSpecificOrigins no sea null ni vacío
+        if (myAllowSpecificOrigins != null && myAllowSpecificOrigins.Length > 0)
+        {
+            policy.WithOrigins("http://localhost", "http://localhost:80", "http://localhost:3000", "http://localhost:8080")
+                  .WithMethods("GET", "POST", "DELETE", "PUT")
+                  .AllowAnyHeader();
+        }
+        else
+        {
+            // Si no se configura correctamente, puedes aplicar una política más permisiva o lanzar un error
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
     });
 });
 
@@ -64,7 +77,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -1,0 +1,5 @@
+MYSQL_ROOT_PASSWORD=pass
+MYSQL_DATABASE=gestion_cartuchos
+CONNECTION_STRING="Server=host.docker.internal;Port=33060;Database=gestion_cartuchos;User=root;Password=${MYSQL_ROOT_PASSWORD};"
+MY_ALLOW_SPECIFIC_ORIGINS="http://localhost"
+
